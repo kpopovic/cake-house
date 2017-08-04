@@ -1,0 +1,14 @@
+sudo: false
+dist: trusty
+language: node_js
+node_js:
+    - '7'
+    - node
+cache:
+    directories:
+        - node_modules
+addons:
+    mariadb: '10.2'
+before_install:
+    - mysql -e 'DROP DATABASE IF EXISTS cakehouse;'
+    - mysql -e 'CREATE DATABASE cakehouse DEFAULT CHARACTER SET utf8;'

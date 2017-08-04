@@ -1,0 +1,13 @@
+#-- Install node_modules --#
+
+1. sudo apt-get update
+2. sudo apt-get install build-essential
+3. npm install
+
+#-- Reset git versioning --#
+
+1. git init
+2. git remote add origin https://github.com/kpopovic/cake-house.git
+3. git add .
+4. git commit -m "Initial commit"
+5. git push -u -f origin master
