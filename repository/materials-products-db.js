@@ -6,15 +6,13 @@ const _ = require('lodash');
 module.exports = {
 
     add: async function (/** @type {knex} */ db, /** @type {object} */ props) {
-        const tmpProps = props.map(item => {
+        const toInsert = props.map(item => {
             return {
                 materialId: item.materialId,
                 productId: item.productId,
                 quantity: item.quantity
             };
         });
-
-        const toInsert = _.omit(tmpProps, _.isUndefined, _.isNull);
 
         return db.batchInsert('materials_products', toInsert);
     },
@@ -64,6 +62,6 @@ module.exports = {
     */
     delete: async function (/** @type {knex} */ db, /** @type {object} */ props) {
         const productId = Array.of(props.productId);
-        return db('materials_products').whereIn('productId', orderId).del();
+        return db('materials_products').whereIn('productId', productId).del();
     }
 };

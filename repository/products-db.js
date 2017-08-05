@@ -3,6 +3,7 @@
 const knex = require('knex');
 const materials = require('./materials-db');
 const materials_products = require('./materials-products-db');
+const moment = require('moment');
 const _ = require('lodash');
 
 module.exports = {
@@ -73,8 +74,8 @@ module.exports = {
 
                 const bridgeToInsert = theProps.materials.map(material => {
                     return {
-                        productId: material.id,
-                        orderId: orderId,
+                        materialId: material.id,
+                        productId: productId,
                         quantity: material.quantity
                     };
                 });
@@ -244,6 +245,7 @@ module.exports = {
 
         const materialIds = productsResult.map(p => p.mId);
         const materialsResult = await materials.listById(db, userId, { materialId: materialIds });
+        const mpResult = await materials_products.list(db, { productId: productIds });
 
         const resultGrouped = _.groupBy(productsResult, function (key) {
             return key.name;
@@ -251,11 +253,15 @@ module.exports = {
 
         const resultTransformed = _.keys(resultGrouped).map(key => {
             const product = resultGrouped[key];
+            const materialsWithNeededQuantity = _.filter(mpResult, { 'id': product[0].id });
 
             const materials = _.filter(materialsResult, function (m) {
                 const isFound = _.some(product, { mId: m.id });
                 if (isFound) {
-                    return m;
+                    const filteredMaterials = _.head(materialsWithNeededQuantity).materials;
+                    const filteredQuantity = _.filter(filteredMaterials, { id: m.id });
+                    const quantity = _.head(filteredQuantity).quantity;
+                    return Object.assign(m, { quantityNeededForThisProduct: quantity });
                 }
             });
 

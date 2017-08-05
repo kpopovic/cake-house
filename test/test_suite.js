@@ -190,6 +190,50 @@ describe('Main test', () => {
         expect(result3.data).to.not.haveOwnProperty('nextStart');
     });
 
+    it('update product', async function () {
+        const currentProducts1 = await dummyData.defaultProductList(agent);
+        const product = _.head(currentProducts1.data.products);
+        const productId = product.id;
+
+        const currentMaterials = await dummyData.defaultMaterialList(agent);
+        const firstMaterialId = _.head(currentMaterials.data.materials).id;
+        const lastMaterialId = _.last(currentMaterials.data.materials).id;
+
+        const newProduct = {
+            id: productId,
+            name: 'Product Name Update',
+            materials: [{ id: firstMaterialId, quantity: 4.50 }, { id: lastMaterialId, quantity: 6.75 }]
+        };
+
+        await dummyData.updateProduct(agent, newProduct);
+
+        const currentProducts2 = await dummyData.defaultProductList(agent);
+        const newCurrentProduct = _.head(currentProducts2.data.products);
+
+        expect(newCurrentProduct.id).to.equal(productId);
+        expect(newCurrentProduct.name).to.equal(newProduct.name);
+
+        newCurrentProduct.materials.forEach(material => {
+            expect(material).to.haveOwnProperty('id');
+            expect(material).to.haveOwnProperty('name');
+            expect(material).to.haveOwnProperty('quantityInStock');
+            expect(material).to.haveOwnProperty('quantityInPending');
+            expect(material).to.haveOwnProperty('quantityInProduction');
+            expect(material).to.haveOwnProperty('quantityInDone');
+            expect(material).to.haveOwnProperty('quantityToBuy');
+            expect(material).to.haveOwnProperty('quantityNeededForThisProduct');
+        });
+
+        const f1 = _.filter(newCurrentProduct.materials, { quantityNeededForThisProduct: 4.5 });
+        expect(f1).not.empty
+        expect(f1.length).to.equal(1);
+
+        const f2 = _.filter(newCurrentProduct.materials, { quantityNeededForThisProduct: 6.75 });
+        expect(f2).not.empty
+        expect(f2.length).to.equal(1);
+
+    });
+
     it('get first 30 active orders', async function () {
         const result = await dummyData.defaultOrderList(agent);
         expect(result.data.orders).not.empty;

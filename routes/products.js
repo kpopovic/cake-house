@@ -17,6 +17,18 @@ router.post('/', async function (req, res) {
     }
 });
 
+router.put('/', async function (req, res) {
+    try {
+        const productId = parseInt(req.query.productId); // NaN if not integer
+        const toUpdate = Object.assign({ id: productId }, req.body);
+        const result = await products.update(req.db, req.userId, toUpdate);
+        res.json({ code: 0, type: 'UPDATE_PRODUCT', message: 'Product is updated', data: { id: result } });
+    } catch (err) {
+        console.error(err);
+        res.json({ code: -1, type: 'UPDATE_PRODUCT', message: 'Product is not updated' });
+    }
+});
+
 router.get('/', async function (req, res) {
     try {
         if (req.query.productId) {

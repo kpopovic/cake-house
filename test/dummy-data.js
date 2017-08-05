@@ -86,16 +86,12 @@ module.exports = {
     },
 
     dropAllTables: async function () {
-        try {
-            await module.exports.dropTableProductsOrders();
-            await module.exports.dropTableMaterialsProducts();
-            await module.exports.dropTableOrders();
-            await module.exports.dropTableProducts();
-            await module.exports.dropTableMaterials();
-            await module.exports.dropTableUsers();
-        } catch (err) {
-            throw err;
-        }
+        await module.exports.dropTableProductsOrders();
+        await module.exports.dropTableMaterialsProducts();
+        await module.exports.dropTableOrders();
+        await module.exports.dropTableProducts();
+        await module.exports.dropTableMaterials();
+        await module.exports.dropTableUsers();
     },
 
     createTableUsers: function () {
@@ -381,6 +377,12 @@ module.exports = {
     updateMaterial: async function (agent, props) {
         const materialId = props.id;
         const result = await agent.put(`/v1/material?materialId=${materialId}`).set('Cookie', COOKIE).send(props);
+        return result.body;
+    },
+
+    updateProduct: async function (agent, props) {
+        const productId = props.id;
+        const result = await agent.put(`/v1/product?productId=${productId}`).set('Cookie', COOKIE).send(props);
         return result.body;
     },
 
