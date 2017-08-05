@@ -230,7 +230,7 @@ describe('Main test', () => {
 
         const f2 = _.filter(newCurrentProduct.materials, { quantityNeededForThisProduct: 6.75 });
         expect(f2).not.empty
-        expect(f2.length).to.equal(1);
+        expect(f1.length).to.equal(1);
 
     });
 

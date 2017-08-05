@@ -255,15 +255,18 @@ module.exports = {
             const product = resultGrouped[key];
             const materialsWithNeededQuantity = _.filter(mpResult, { 'id': product[0].id });
 
-            const materials = _.filter(materialsResult, function (m) {
+            const tmpMaterials = materialsResult.map(m => {
                 const isFound = _.some(product, { mId: m.id });
                 if (isFound) {
                     const filteredMaterials = _.head(materialsWithNeededQuantity).materials;
                     const filteredQuantity = _.filter(filteredMaterials, { id: m.id });
                     const quantity = _.head(filteredQuantity).quantity;
-                    return Object.assign(m, { quantityNeededForThisProduct: quantity });
+
+                    return Object.assign({}, m, { quantityNeededForThisProduct: quantity });
                 }
             });
+
+            const materials = _.compact(tmpMaterials);
 
             const result = {
                 'id': product[0].id,
