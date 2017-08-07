@@ -26,7 +26,13 @@
     "moment": "^2.18.1",
     "morgan": "~1.8.1",
     "mysql": "^2.14.1",
+    "postal": "^2.0.5",
     "pug": "~2.0.0-beta11",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-localization": "^0.1.1",
+    "semantic-ui-css": "^2.2.11",
+    "semantic-ui-react": "^0.71.3",
     "serve-favicon": "~2.4.2"
   },
   "devDependencies": {
@@ -39,7 +45,9 @@
     "gulp": "^3.9.1",
     "gulp-eslint": "^4.0.0",
     "gulp-uglify": "^3.0.0",
-    "mocha": "^3.4.2"
+    "mocha": "^3.4.2",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
   },
   "engines": {
     "node": ">=7"

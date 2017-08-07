@@ -17,6 +17,8 @@ const materials = require('./routes/materials');
 const products = require('./routes/products');
 const orders = require('./routes/orders');
 
+const loginView = require('./routes/loginView'); // login form
+
 const app = express();
 
 // compress all responses
@@ -43,22 +45,24 @@ app.use('/v1/material', materials);
 app.use('/v1/product', products);
 app.use('/v1/order', orders);
 
+app.use('/login', loginView);
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
 // error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 module.exports = app;
