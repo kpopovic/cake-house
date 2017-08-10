@@ -6,15 +6,12 @@ import { Button, Form, Grid, Header, Input, Message, Segment } from 'semantic-ui
 import locale from '../javascripts/locale.js';
 import service from './../javascripts/services/login-service.js';
 import constants from './../javascripts/constants.js'
+import rootUrl from './../javascripts/web-root-url.js'
 
 export default class LoginForm extends Component {
     constructor(props) {
         super(props);
         this.subscription = service.subscribe(constants.TOPIC_LOGIN_RESPONSE, this.loginResponse.bind(this));
-    }
-
-    componentWillMount() {
-        //document.body.classList.add('login');
     }
 
     componentWillUnmount() {
@@ -39,7 +36,9 @@ export default class LoginForm extends Component {
     }
 
     loginResponse(response) {
-        console.log(JSON.stringify(response, null, 2));
+        if (response.data && response.data.code === 0) {
+            window.location.replace(rootUrl + "/index");
+        }
     }
 
     render() {

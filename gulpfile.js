@@ -8,7 +8,7 @@ const source = require('vinyl-source-stream');
 // https://thesocietea.org/2016/01/building-es6-javascript-for-the-browser-with-gulp-babel-and-more/
 
 const loginJsxPath = './client/jsx/LoginForm.jsx';
-//const indexJsxPath = './client/jsx/Index.jsx';
+const indexJsxPath = './client/jsx/Index.jsx';
 const jsDestPath = './public/javascripts';
 
 gulp.task('compile-jsx-login', function () {
@@ -21,8 +21,7 @@ gulp.task('compile-jsx-login', function () {
         .pipe(gulp.dest(jsDestPath));
 });
 
-/*
-gulp.task('index-jsx-transform', function () {
+gulp.task('compile-jsx-index', function () {
     return browserify({ entries: indexJsxPath, extensions: ['.jsx'], debug: false })
         .transform('babelify', { presets: ['es2015', 'react'] })
         .bundle()
@@ -30,6 +29,6 @@ gulp.task('index-jsx-transform', function () {
         .pipe(buffer())
         .pipe(uglify())
         .pipe(gulp.dest(jsDestPath));
-}); */
+});
 
 //gulp.task('default', ['login-jsx-transform', 'index-jsx-transform']);

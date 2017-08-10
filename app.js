@@ -3,7 +3,7 @@
 const compression = require('compression');
 const express = require('express');
 const path = require('path');
-const favicon = require('serve-favicon');
+//const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -11,13 +11,13 @@ const knexDB = require('./config/knex-express');
 const cookieConf = require('./config/cookie-conf');
 
 const authMiddleware = require('./routes/auth-middleware');
-const index = require('./routes/index');
 const users = require('./routes/users');
 const materials = require('./routes/materials');
 const products = require('./routes/products');
 const orders = require('./routes/orders');
 
 const loginView = require('./routes/loginView'); // login form
+const indexView = require('./routes/indexView'); // index / dashboard
 
 const app = express();
 
@@ -39,13 +39,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(knexDB()); // see ./config/knex***.js for details
 
 app.use('*', authMiddleware);
-app.use('/', index);
 app.use('/v1/user', users);
 app.use('/v1/material', materials);
 app.use('/v1/product', products);
 app.use('/v1/order', orders);
 
 app.use('/login', loginView);
+app.use('/', indexView);
+app.use('/index', indexView);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

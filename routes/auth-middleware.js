@@ -12,7 +12,12 @@ const cookieConf = require('../config/cookie-conf');
 
 router.all('/', async function (req, res, next) {
     try {
-        if (req.originalUrl === '/v1/user' && req.method === 'POST') {
+        if (req.originalUrl === '/favicon.ico') {
+            res.end();
+        } else if (req.originalUrl === '/v1/user/logout' && req.method === 'GET') {
+            res.clearCookie(cookieConf.name);
+            res.json({ code: 0, type: 'USER_LOGOUT', message: 'User cookie is cleared' });
+        } else if (req.originalUrl === '/v1/user' && req.method === 'POST') {
             next();
         } else if (req.originalUrl === '/v1/user' && req.method === 'GET') { // user pressed Login button
             // verify route via Basic auth
@@ -22,7 +27,7 @@ router.all('/', async function (req, res, next) {
 
             if (result && userId) {
                 const options = {
-                    maxAge: cookieConf.maxAge, // would expire after 15 minutes
+                    maxAge: cookieConf.maxAge,
                     httpOnly: cookieConf.httpOnly, // The cookie only accessible by the web server
                     signed: cookieConf.signed // Indicates if the cookie should be signed
                 };
@@ -32,7 +37,7 @@ router.all('/', async function (req, res, next) {
                 res.json({ code: 0, type: 'BASIC_AUTH_VALID', message: 'User is valid' });
             } else {
                 res.clearCookie(cookieConf.name);
-                res.json({ code: 0, type: 'BASIC_AUTH_NOT_VALID', message: 'User is not valid' });
+                res.json({ code: -1, type: 'BASIC_AUTH_NOT_VALID', message: 'User is not valid' });
             }
         } else { // verify route via cookie
             const tokenDecoded = req.signedCookies[cookieConf.name];
@@ -42,7 +47,7 @@ router.all('/', async function (req, res, next) {
                 console.warn("UserId is not found");
             }
 
-            if (req.originalUrl === '/') {
+            if (req.originalUrl === '/' || req.originalUrl === '/index') {
                 if (req.userId) {
                     next();
                 } else {
@@ -63,9 +68,8 @@ router.all('/', async function (req, res, next) {
                     res.clearCookie(cookieConf.name);
                     res.json({ code: -1, type: 'COOKIE_NOT_VALID', message: 'User is not valid' });
                 }
-            } else if (req.originalUrl.startsWith('/public/locale/Messages')) {
-                next();
             } else {
+                console.log("route unknown=" + req.originalUrl);
                 res.clearCookie(cookieConf.name);
                 res.json({ code: -1, type: 'UNSUPPORTED_ROUTE', message: 'Route is not valid' });
             }
@@ -73,7 +77,7 @@ router.all('/', async function (req, res, next) {
     } catch (err) {
         console.error(err);
         res.clearCookie(cookieConf.name);
-        res.json({ code: 1, type: 'BASIC_AUTH_NOT_VALID', message: 'Internal error' });
+        res.json({ code: -1, type: 'BASIC_AUTH_NOT_VALID', message: 'Internal error' });
     }
 });
 
