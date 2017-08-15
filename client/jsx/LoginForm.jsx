@@ -2,41 +2,29 @@
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Button, Form, Grid, Header, Input, Message, Segment } from 'semantic-ui-react';
+import { Button, Form, Grid, Segment, Header, Message } from 'semantic-ui-react';
 import locale from '../javascripts/locale.js';
-import service from './../javascripts/services/login-service.js';
-import constants from './../javascripts/constants.js'
 import rootUrl from './../javascripts/web-root-url.js'
+import Reflux from 'reflux';
+import AuthStore from './../javascripts/stores/AuthStore.js';
+import AuthActions from './../javascripts/actions/auth-actions.js';
 
-export default class LoginForm extends Component {
-    constructor(props) {
-        super(props);
-        this.subscription = service.subscribe(constants.TOPIC_LOGIN_RESPONSE, this.loginResponse.bind(this));
-    }
-
-    componentWillUnmount() {
-        this.subscription.unsubscribe();
-    }
-
-    handleOnChange(fieldName, event) {
-        if (fieldName === 'username') {
-            this.username = event.target.value;
-        } if (fieldName === 'password') {
-            this.password = event.target.value;
-        }
+export default class LoginForm extends Reflux.Component {
+    constructor() {
+        super();
+        this.store = AuthStore;
     }
 
     handleOnClick() {
-        service.publish(constants.TOPIC_LOGIN_REQUEST, {
-            data: {
-                username: this.username,
-                password: this.password
-            }
+        AuthActions.loginUser({
+            username: this.state.username,
+            password: this.state.password
         });
     }
 
-    loginResponse(response) {
-        if (response.data && response.data.code === 0) {
+    componentDidUpdate(prevProps, prevState) {
+        const data = this.state.data;
+        if (data && data.code === 0) {
             window.location.replace(rootUrl + "/index");
         }
     }
@@ -51,14 +39,14 @@ export default class LoginForm extends Component {
                     <Form size='large'>
                         <Segment stacked>
                             <Form.Input
-                                onChange={this.handleOnChange.bind(this, 'username')}
+                                onChange={(e, { value }) => AuthActions.updateCredentials({ username: value })}
                                 fluid
                                 icon='user'
                                 iconPosition='left'
                                 placeholder={locale.login_page_username}
                             />
                             <Form.Input
-                                onChange={this.handleOnChange.bind(this, 'password')}
+                                onChange={(e, { value }) => AuthActions.updateCredentials({ password: value })}
                                 fluid
                                 icon='lock'
                                 iconPosition='left'

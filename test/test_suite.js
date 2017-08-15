@@ -134,6 +134,7 @@ describe('Main test', () => {
             product.materials.forEach(material => {
                 expect(material).to.haveOwnProperty('id');
                 expect(material).to.haveOwnProperty('name');
+                expect(material).to.haveOwnProperty('unit');
                 expect(material).to.haveOwnProperty('quantityInStock');
                 expect(material).to.haveOwnProperty('quantityInPending');
                 expect(material).to.haveOwnProperty('quantityInProduction');
@@ -163,6 +164,7 @@ describe('Main test', () => {
             product.materials.forEach(material => {
                 expect(material).to.haveOwnProperty('id');
                 expect(material).to.haveOwnProperty('name');
+                expect(material).to.haveOwnProperty('unit');
                 expect(material).to.haveOwnProperty('quantityInStock');
                 expect(material).to.haveOwnProperty('quantityInPending');
                 expect(material).to.haveOwnProperty('quantityInProduction');
@@ -216,6 +218,7 @@ describe('Main test', () => {
         newCurrentProduct.materials.forEach(material => {
             expect(material).to.haveOwnProperty('id');
             expect(material).to.haveOwnProperty('name');
+            expect(material).to.haveOwnProperty('unit');
             expect(material).to.haveOwnProperty('quantityInStock');
             expect(material).to.haveOwnProperty('quantityInPending');
             expect(material).to.haveOwnProperty('quantityInProduction');

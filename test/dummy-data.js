@@ -122,7 +122,7 @@ module.exports = {
                 table.string('name').notNullable();
                 table.enum('unit', ['kg', 'L']).notNullable();
                 table.integer('userId').unsigned().references('id').inTable('users').notNullable();
-                table.decimal('quantityInStock').unsigned().notNullable();
+                table.decimal('quantityInStock').unsigned().notNullable().defaultTo(0);
                 table.dateTime('created_at').defaultTo(db.fn.now()).notNullable();
                 table.dateTime('updated_at').defaultTo(db.fn.now()).notNullable();
                 table.dateTime('deactivated_at').nullable();

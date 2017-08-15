@@ -69,9 +69,8 @@ router.all('/', async function (req, res, next) {
                     res.json({ code: -1, type: 'COOKIE_NOT_VALID', message: 'User is not valid' });
                 }
             } else {
-                console.log("route unknown=" + req.originalUrl);
-                res.clearCookie(cookieConf.name);
-                res.json({ code: -1, type: 'UNSUPPORTED_ROUTE', message: 'Route is not valid' });
+                console.warn("route unknown=" + req.originalUrl);
+                res.end();
             }
         }
     } catch (err) {

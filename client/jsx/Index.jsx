@@ -4,22 +4,15 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Menu, Segment, Icon } from 'semantic-ui-react';
 import locale from '../javascripts/locale.js';
-import service from './../javascripts/services/login-service.js';
-import constants from './../javascripts/constants.js'
 import rootUrl from './../javascripts/web-root-url.js'
-import MaterialContainer from './../jsx/material/MaterialContainer'
+import Material from './../jsx/material/Material'
 import ProductContainer from './../jsx/product/ProductContainer'
 import OrderContainer from './../jsx/order/OrderContainer'
 
 export default class Index extends React.Component {
     constructor(props) {
         super(props);
-        this.subscription = service.subscribe(constants.TOPIC_LOGOUT_RESPONSE, this.logoutResponse.bind(this));
         this.state = { activeItem: MENU_MATERIAL };
-    }
-
-    componentWillUnmount() {
-        this.subscription.unsubscribe();
     }
 
     handleItemClick(event, item) {
@@ -61,7 +54,7 @@ export default class Index extends React.Component {
                 </Menu>
 
                 <div style={activeItem === MENU_MATERIAL ? {} : { display: 'none' }}>
-                    <MaterialContainer />
+                    <Material />
                 </div>
 
                 <div style={activeItem === MENU_PRODUCT ? {} : { display: 'none' }}>

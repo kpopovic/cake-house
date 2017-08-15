@@ -26,13 +26,13 @@
     "moment": "^2.18.1",
     "morgan": "~1.8.1",
     "mysql": "^2.14.1",
-    "postal": "^2.0.5",
     "pug": "~2.0.0-beta11",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-localization": "^0.1.1",
-    "semantic-ui-css": "^2.2.11",
-    "semantic-ui-react": "^0.71.3",
+    "reflux": "^6.4.1",
+    "semantic-ui-css": "^2.2.12",
+    "semantic-ui-react": "^0.71.4",
     "serve-favicon": "~2.4.2"
   },
   "devDependencies": {

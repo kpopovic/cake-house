@@ -88,6 +88,7 @@ module.exports = {
         return db.select(
             'id',
             'name',
+            'unit',
             'quantityInStock',
             db.raw('SUM(quantityInPending) AS quantityInPending'),
             db.raw('SUM(quantityInProduction) AS quantityInProduction'),
