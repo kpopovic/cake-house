@@ -3,7 +3,8 @@
 import Reflux from 'reflux';
 
 const AuthActions = Reflux.createActions([
-    "updateCredentials",
+    "setFormFieldUsername",
+    "setFormFieldPassword",
     "loginUser",
     "logoutUser"
 ]);

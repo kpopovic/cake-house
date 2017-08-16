@@ -5,24 +5,21 @@ import ReactDOM from 'react-dom';
 import { Menu, Segment, Icon } from 'semantic-ui-react';
 import locale from '../javascripts/locale.js';
 import rootUrl from './../javascripts/web-root-url.js'
+import AuthActions from './../javascripts/actions/auth-actions'
+import AuthStore from './../javascripts/stores/AuthStore'
 import Material from './../jsx/material/Material'
 import ProductContainer from './../jsx/product/ProductContainer'
 import OrderContainer from './../jsx/order/OrderContainer'
+import Reflux from 'reflux';
 
-export default class Index extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { activeItem: MENU_MATERIAL };
+export default class Index extends Reflux.Component {
+    constructor() {
+        super();
+        this.store = AuthStore;
     }
 
     handleItemClick(event, item) {
         this.setState({ activeItem: item.name });
-    }
-
-    handleSignOutClick(event) {
-        service.publish(constants.TOPIC_LOGOUT_REQUEST, {
-            data: null
-        });
     }
 
     logoutResponse(response) {
@@ -48,7 +45,7 @@ export default class Index extends React.Component {
                     </Menu.Item>
                     <Menu.Menu position='right'>
                         <Menu.Item>
-                            <Icon className="sign out big" onClick={this.handleSignOutClick.bind(this)} />
+                            <Icon className="sign out big" onClick={(e, data) => AuthActions.logoutUser()} />
                         </Menu.Item>
                     </Menu.Menu>
                 </Menu>

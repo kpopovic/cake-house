@@ -15,16 +15,9 @@ export default class LoginForm extends Reflux.Component {
         this.store = AuthStore;
     }
 
-    handleOnClick() {
-        AuthActions.loginUser({
-            username: this.state.username,
-            password: this.state.password
-        });
-    }
-
     componentDidUpdate(prevProps, prevState) {
-        const data = this.state.data;
-        if (data && data.code === 0) {
+        const { userAuthenticated } = this.state.lStore;
+        if (userAuthenticated) {
             window.location.replace(rootUrl + "/index");
         }
     }
@@ -39,14 +32,14 @@ export default class LoginForm extends Reflux.Component {
                     <Form size='large'>
                         <Segment stacked>
                             <Form.Input
-                                onChange={(e, { value }) => AuthActions.updateCredentials({ username: value })}
+                                onChange={(e, { value }) => AuthActions.setFormFieldUsername(value)}
                                 fluid
                                 icon='user'
                                 iconPosition='left'
                                 placeholder={locale.login_page_username}
                             />
                             <Form.Input
-                                onChange={(e, { value }) => AuthActions.updateCredentials({ password: value })}
+                                onChange={(e, { value }) => AuthActions.setFormFieldPassword(value)}
                                 fluid
                                 icon='lock'
                                 iconPosition='left'
@@ -54,7 +47,7 @@ export default class LoginForm extends Reflux.Component {
                                 type='password'
                             />
 
-                            <Button color='teal' fluid size='large' onClick={this.handleOnClick.bind(this)}>{locale.login_page_login}</Button>
+                            <Button color='teal' fluid size='large' onClick={(e, data) => AuthActions.loginUser()}>{locale.login_page_login}</Button>
                         </Segment>
                     </Form>
                 </Grid.Column>
