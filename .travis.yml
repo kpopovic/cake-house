@@ -12,3 +12,6 @@ addons:
 before_install:
     - mysql -e 'DROP DATABASE IF EXISTS cakehouse;'
     - mysql -e 'CREATE DATABASE cakehouse DEFAULT CHARACTER SET utf8;'
+branches:
+  only:
+  - master
