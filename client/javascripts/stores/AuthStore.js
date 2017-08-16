@@ -6,10 +6,10 @@ import rootUrl from './../web-root-url'
 import _ from 'lodash';
 
 export default class AuthStore extends Reflux.Store {
-    constructor() {
-        super();
+    constructor(userAuthenticated) {
+        super(userAuthenticated);
         this.listenables = AuthActions;
-        this.state = { lStore: { userAuthenticated: false } };
+        this.state = { lStore: { userAuthenticated: userAuthenticated ? userAuthenticated : false } };
     }
 
     onSetFormFieldUsername(username) {
@@ -35,8 +35,8 @@ export default class AuthStore extends Reflux.Store {
         });
 
         promise.done(data => {
-            const data = Object.assign({}, this.state.lStore, { userAuthenticated: true });
-            this.setState({ lStore: data });
+            const newData = Object.assign({}, this.state.lStore, { userAuthenticated: true });
+            this.setState({ lStore: newData });
         });
 
         promise.fail(error => {
@@ -53,8 +53,8 @@ export default class AuthStore extends Reflux.Store {
         });
 
         promise.done(data => {
-            const data = Object.assign({}, this.state.lStore, { userAuthenticated: false });
-            this.setState({ lStore: data });
+            const newData = Object.assign({}, this.state.lStore, { userAuthenticated: false });
+            this.setState({ lStore: newData });
         });
 
         promise.fail(error => {

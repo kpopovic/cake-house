@@ -6,7 +6,9 @@ import { Menu, Segment, Icon } from 'semantic-ui-react';
 import locale from '../javascripts/locale.js';
 import rootUrl from './../javascripts/web-root-url.js'
 import AuthActions from './../javascripts/actions/auth-actions'
+import IndexActions from './../javascripts/actions/index-actions'
 import AuthStore from './../javascripts/stores/AuthStore'
+import IndexStore from './../javascripts/stores/IndexStore'
 import Material from './../jsx/material/Material'
 import ProductContainer from './../jsx/product/ProductContainer'
 import OrderContainer from './../jsx/order/OrderContainer'
@@ -15,32 +17,29 @@ import Reflux from 'reflux';
 export default class Index extends Reflux.Component {
     constructor() {
         super();
-        this.store = AuthStore;
+        this.stores = [new AuthStore(true), new IndexStore(MENU_MATERIAL)];
     }
 
-    handleItemClick(event, item) {
-        this.setState({ activeItem: item.name });
-    }
-
-    logoutResponse(response) {
-        if (response.data && response.data.code === 0) {
+    componentDidUpdate() {
+        const { userAuthenticated } = this.state.lStore;
+        if (!userAuthenticated) {
             window.location.replace(rootUrl + "/login");
         }
     }
 
     render() {
-        const { activeItem } = this.state;
+        const { activeItem } = this.state.iStore;
 
         return (
             <div>
                 <Menu pointing>
-                    <Menu.Item name={MENU_MATERIAL} active={activeItem === MENU_MATERIAL} onClick={this.handleItemClick.bind(this)}>
+                    <Menu.Item name={MENU_MATERIAL} active={activeItem === MENU_MATERIAL} onClick={(e, data) => IndexActions.setActiveItem(MENU_MATERIAL)}>
                         MENU_MATERIAL
                     </Menu.Item>
-                    <Menu.Item name={MENU_PRODUCT} active={activeItem === MENU_PRODUCT} onClick={this.handleItemClick.bind(this)}>
+                    <Menu.Item name={MENU_PRODUCT} active={activeItem === MENU_PRODUCT} onClick={(e, data) => IndexActions.setActiveItem(MENU_PRODUCT)}>
                         MENU_PRODUCT
                     </Menu.Item>
-                    <Menu.Item name={MENU_ORDER} active={activeItem === MENU_ORDER} onClick={this.handleItemClick.bind(this)}>
+                    <Menu.Item name={MENU_ORDER} active={activeItem === MENU_ORDER} onClick={(e, data) => IndexActions.setActiveItem(MENU_ORDER)}>
                         MENU_ORDER
                     </Menu.Item>
                     <Menu.Menu position='right'>

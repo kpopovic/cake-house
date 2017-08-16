@@ -5,13 +5,23 @@ import { Button, Grid, Icon, Image, Table } from 'semantic-ui-react';
 import Reflux from 'reflux';
 import MaterialModal from './MaterialModal';
 import MaterialModalActions from './../../javascripts/actions/material-modal-actions';
+import MaterialTableActions from './../../javascripts/actions/material-table-actions';
 import MaterialTableStore from './../../javascripts/stores/MaterialTableStore';
+import MaterialModalStore from './../../javascripts/stores/MaterialModalStore';
 
 export default class MaterialTable extends Reflux.Component {
     constructor() {
         super();
-        this.store = MaterialTableStore;
+        this.stores = [MaterialTableStore, MaterialModalStore];
     }
+    /*
+    componentDidUpdate() {
+        const { updateMaterialList } = this.state.mStore;
+        if (updateMaterialList) {
+            MaterialModalActions.resetStore(); // to prevent loop we reset store !
+            MaterialTableActions.listMaterials();
+        }
+    }*/
 
     fillTableBody(materials) {
         if (Array.isArray(materials) && materials.length > 0) {
@@ -51,7 +61,7 @@ export default class MaterialTable extends Reflux.Component {
     }
 
     render() {
-        const { materials } = this.state;
+        const { materials } = this.state.mtStore;
 
         return (
             <div>

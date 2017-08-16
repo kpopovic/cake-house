@@ -39,7 +39,7 @@ export default class MaterialModalStore extends Reflux.Store {
 
         promise.done(data => {
             if (data.code === 0) {
-                this.onCloseModal();
+                this.setState({ mStore: { open: false } });
             }
         });
 
@@ -74,7 +74,7 @@ export default class MaterialModalStore extends Reflux.Store {
         this.setState({ mStore: data });
     }
 
-    onCloseModal() {
+    onResetStore() {
         this.setState({ mStore: { open: false } });
     }
 

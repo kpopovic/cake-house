@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import { Button, Header, Modal, Form } from 'semantic-ui-react';
 import Reflux from 'reflux';
+import MaterialTableActions from './../../javascripts/actions/material-table-actions';
 import MaterialModalActions from './../../javascripts/actions/material-modal-actions.js';
 import MaterialModalStore from './../../javascripts/stores/MaterialModalStore';
 
@@ -15,7 +16,7 @@ export default class MaterialModal extends Reflux.Component {
     render() {
         const { name, unit, quantityInStock, open } = this.state.mStore;
         return (
-            <Modal dimmer='blurring' open={open} onClose={(e, data) => MaterialModalActions.closeModal()}>
+            <Modal dimmer='blurring' open={open} onClose={(e, data) => MaterialModalActions.resetStore()}>
                 <Modal.Header>Add new material</Modal.Header>
                 <Modal.Content>
                     <Form>
@@ -49,7 +50,7 @@ export default class MaterialModal extends Reflux.Component {
                     </Form>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button onClick={(e, data) => MaterialModalActions.closeModal()}>
+                    <Button onClick={(e, data) => MaterialModalActions.resetStore()}>
                         Cancel
                     </Button>
                     <Button

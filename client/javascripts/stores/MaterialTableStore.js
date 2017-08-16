@@ -8,7 +8,7 @@ export default class MaterialTableStore extends Reflux.Store {
     constructor() {
         super();
         this.listenables = MaterialTableActions;
-        this.state = { materials: [] };
+        this.state = { mtStore: { materials: [] } };
     }
 
     onListMaterials(request) {
@@ -30,8 +30,8 @@ export default class MaterialTableStore extends Reflux.Store {
 
         promise.done(data => {
             if (data.code === 0) {
-                const newState = Object.assign({}, this.state, { materials: data.data.materials, selectedRow: null, open: false });
-                this.setState(newState);
+                const newState = Object.assign({}, this.state.mtStore, { materials: data.data.materials });
+                this.setState({ mtStore: newState });
             }
         });
 

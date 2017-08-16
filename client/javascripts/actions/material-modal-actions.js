@@ -6,7 +6,7 @@ const MaterialModalActions = Reflux.createActions([
     "saveOrUpdate",
     "showModalUpdateMaterial",
     "showModalAddMaterial",
-    "closeModal",
+    "resetStore",
     "setFormFieldName",
     "setFormFieldUnit",
     "setFormFieldQuantityInStock"

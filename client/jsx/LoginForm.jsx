@@ -15,7 +15,7 @@ export default class LoginForm extends Reflux.Component {
         this.store = AuthStore;
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate() {
         const { userAuthenticated } = this.state.lStore;
         if (userAuthenticated) {
             window.location.replace(rootUrl + "/index");
