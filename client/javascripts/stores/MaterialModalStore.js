@@ -39,12 +39,18 @@ export default class MaterialModalStore extends Reflux.Store {
 
         promise.done(data => {
             if (data.code === 0) {
-                this.setState({ mStore: { open: false } });
+                const newState = { mStore: { open: false } };
+                this.setState(newState);
+                MaterialModalActions.saveOrUpdate.completed(newState);
+            } else {
+                console.error(JSON.stringify(data, null, 2));
+                MaterialModalActions.saveOrUpdate.failed(this.state.mStore);
             }
         });
 
         promise.fail(error => {
             console.error(error);
+            MaterialModalActions.saveOrUpdate.failed(error);
         });
     }
 

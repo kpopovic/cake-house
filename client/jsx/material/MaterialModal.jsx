@@ -11,6 +11,10 @@ export default class MaterialModal extends Reflux.Component {
     constructor() {
         super();
         this.store = MaterialModalStore;
+
+        MaterialModalActions.saveOrUpdate.completed.listen(() => { // store will trigger 'completed'
+            MaterialTableActions.listMaterials();
+        });
     }
 
     render() {

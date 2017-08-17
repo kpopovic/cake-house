@@ -7,21 +7,12 @@ import MaterialModal from './MaterialModal';
 import MaterialModalActions from './../../javascripts/actions/material-modal-actions';
 import MaterialTableActions from './../../javascripts/actions/material-table-actions';
 import MaterialTableStore from './../../javascripts/stores/MaterialTableStore';
-import MaterialModalStore from './../../javascripts/stores/MaterialModalStore';
 
 export default class MaterialTable extends Reflux.Component {
     constructor() {
         super();
-        this.stores = [MaterialTableStore, MaterialModalStore];
+        this.store = MaterialTableStore;
     }
-    /*
-    componentDidUpdate() {
-        const { updateMaterialList } = this.state.mStore;
-        if (updateMaterialList) {
-            MaterialModalActions.resetStore(); // to prevent loop we reset store !
-            MaterialTableActions.listMaterials();
-        }
-    }*/
 
     fillTableBody(materials) {
         if (Array.isArray(materials) && materials.length > 0) {

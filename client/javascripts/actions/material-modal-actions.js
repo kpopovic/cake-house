@@ -2,8 +2,7 @@
 
 import Reflux from 'reflux';
 
-const MaterialModalActions = Reflux.createActions([
-    "saveOrUpdate",
+let MaterialModalActions = Reflux.createActions([
     "showModalUpdateMaterial",
     "showModalAddMaterial",
     "resetStore",
@@ -11,5 +10,7 @@ const MaterialModalActions = Reflux.createActions([
     "setFormFieldUnit",
     "setFormFieldQuantityInStock"
 ]);
+
+MaterialModalActions.saveOrUpdate = Reflux.createAction({ asyncResult: true });
 
 export default MaterialModalActions;
