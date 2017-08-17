@@ -12,7 +12,8 @@
   },
   "scripts": {
     "start": "node ./bin/www",
-    "test": "mocha ./test/test_suite.js --timeout 30000"
+    "test": "mocha ./test/test_suite.js --timeout 30000",
+    "compile": "gulp compileJsx"
   },
   "dependencies": {
     "basic-auth": "^1.1.0",
