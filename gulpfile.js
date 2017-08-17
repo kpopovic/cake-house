@@ -31,4 +31,4 @@ gulp.task('compile-jsx-index', function () {
         .pipe(gulp.dest(jsDestPath));
 });
 
-//gulp.task('default', ['login-jsx-transform', 'index-jsx-transform']);
+gulp.task('compileJsx', ['compile-jsx-login', 'compile-jsx-index']);
