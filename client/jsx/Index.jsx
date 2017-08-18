@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Menu, Segment, Icon } from 'semantic-ui-react';
+import { Menu, Segment, Button } from 'semantic-ui-react';
 import locale from '../javascripts/locale.js';
 import rootUrl from './../javascripts/web-root-url.js'
 import AuthActions from './../javascripts/actions/auth-actions'
@@ -34,7 +34,7 @@ export default class Index extends Reflux.Component {
             <div>
                 <Menu pointing>
                     <Menu.Item name={MENU_MATERIAL} active={activeItem === MENU_MATERIAL} onClick={(e, data) => IndexActions.setActiveItem(MENU_MATERIAL)}>
-                        MENU_MATERIAL
+                        {locale.index_page_material_menu_title}
                     </Menu.Item>
                     <Menu.Item name={MENU_PRODUCT} active={activeItem === MENU_PRODUCT} onClick={(e, data) => IndexActions.setActiveItem(MENU_PRODUCT)}>
                         MENU_PRODUCT
@@ -44,7 +44,7 @@ export default class Index extends Reflux.Component {
                     </Menu.Item>
                     <Menu.Menu position='right'>
                         <Menu.Item>
-                            <Icon className="sign out big" onClick={(e, data) => AuthActions.logoutUser()} />
+                            <Button content={locale.index_page_signout} icon='sign out' labelPosition='right' onClick={(e, data) => AuthActions.logoutUser()} />
                         </Menu.Item>
                     </Menu.Menu>
                 </Menu>
