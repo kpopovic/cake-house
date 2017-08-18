@@ -6,6 +6,8 @@ import Reflux from 'reflux';
 import MaterialTableActions from './../../javascripts/actions/material-table-actions';
 import MaterialModalActions from './../../javascripts/actions/material-modal-actions.js';
 import MaterialModalStore from './../../javascripts/stores/MaterialModalStore';
+import locale from './../../javascripts/locale';
+//import _ from 'lodash';
 
 export default class MaterialModal extends Reflux.Component {
     constructor() {
@@ -17,26 +19,37 @@ export default class MaterialModal extends Reflux.Component {
         });
     }
 
-    render() {
+    isDisableSaveButton() {
         const { name, unit, quantityInStock, open } = this.state.mStore;
+        const isValidName = name && name.length > 0;
+        const isValidUnit = unit && unit.length > 0;
+        const quantityInStockAsNumber = parseFloat(quantityInStock);
+        const isValidNumber = isFinite(quantityInStockAsNumber) && quantityInStockAsNumber >= 0;
+
+        return !(isValidName && isValidUnit && isValidNumber);
+    }
+
+    render() {
+        const { id, name, unit, quantityInStock, open } = this.state.mStore;
+        const headerTitle = id ? locale.material_table_modal_edit_title : locale.material_table_modal_add_title;
         return (
             <Modal dimmer='blurring' open={open} onClose={(e, data) => MaterialModalActions.resetStore()}>
-                <Modal.Header>Add new material</Modal.Header>
+                <Modal.Header>{headerTitle}</Modal.Header>
                 <Modal.Content>
                     <Form>
                         <Form.Group widths='equal'>
                             <Form.Input
                                 id='form-input-material-name'
                                 defaultValue={name}
-                                label='Name'
-                                placeholder='Material name'
+                                label={locale.material_table_header_name}
+                                placeholder={locale.material_table_modal_name_content}
                                 onChange={(e, { value }) => MaterialModalActions.setFormFieldName(value)}
                             />
                             <Form.Select
                                 id='form-input-material-unit'
                                 defaultValue={unit}
-                                label='Unit'
-                                placeholder='Select material unit'
+                                label={locale.material_table_header_unit}
+                                placeholder={locale.material_table_modal_unit_content}
                                 options={options}
                                 simple
                                 item
@@ -45,8 +58,8 @@ export default class MaterialModal extends Reflux.Component {
                             <Form.Input
                                 id='form-input-material-quantity'
                                 defaultValue={quantityInStock}
-                                label='Quantity'
-                                placeholder='Quantity in stock'
+                                label={locale.material_table_modal_quantityInStock}
+                                placeholder={locale.material_table_modal_quantityInStock_content}
                                 type='number'
                                 onChange={(e, { value }) => MaterialModalActions.setFormFieldQuantityInStock(value)}
                             />
@@ -55,13 +68,14 @@ export default class MaterialModal extends Reflux.Component {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={(e, data) => MaterialModalActions.resetStore()}>
-                        Cancel
+                        {locale.material_table_modal_btn_cancel}
                     </Button>
                     <Button
                         positive
+                        disabled={this.isDisableSaveButton()}
                         icon='checkmark'
                         labelPosition='right'
-                        content="Save"
+                        content={locale.material_table_modal_btn_add}
                         onClick={(e, data) => MaterialModalActions.saveOrUpdate()}
                     />
                 </Modal.Actions>
@@ -71,6 +85,6 @@ export default class MaterialModal extends Reflux.Component {
 }
 
 const options = [
-    { key: 'L', text: 'Liter', value: 'L' },
-    { key: 'kg', text: 'Kilogram', value: 'kg' }
+    { key: 'L', text: `${locale.material_type_L}`, value: 'L' },
+    { key: 'kg', text: `${locale.material_type_kg}`, value: 'kg' }
 ]

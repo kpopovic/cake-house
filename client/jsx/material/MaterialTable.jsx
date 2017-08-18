@@ -7,6 +7,7 @@ import MaterialModal from './MaterialModal';
 import MaterialModalActions from './../../javascripts/actions/material-modal-actions';
 import MaterialTableActions from './../../javascripts/actions/material-table-actions';
 import MaterialTableStore from './../../javascripts/stores/MaterialTableStore';
+import locale from './../../javascripts/locale';
 
 export default class MaterialTable extends Reflux.Component {
     constructor() {
@@ -43,7 +44,7 @@ export default class MaterialTable extends Reflux.Component {
                 <Table.Body>
                     <Table.Row key={1}>
                         <Table.Cell colSpan='5'>
-                            <Image fluid src='https://semantic-ui.com/images/wireframe/media-paragraph.png' />
+                            <Image fluid src={locale.material_table_empty} />
                         </Table.Cell>
                     </Table.Row>
                 </Table.Body>
@@ -60,11 +61,11 @@ export default class MaterialTable extends Reflux.Component {
                 <Table basic>
                     <Table.Header>
                         <Table.Row>
-                            <Table.HeaderCell>name</Table.HeaderCell>
-                            <Table.HeaderCell>unit</Table.HeaderCell>
-                            <Table.HeaderCell>quantityInStock</Table.HeaderCell>
-                            <Table.HeaderCell>quantityToBuy</Table.HeaderCell>
-                            <Table.HeaderCell>edit</Table.HeaderCell>
+                            <Table.HeaderCell>{locale.material_table_header_name}</Table.HeaderCell>
+                            <Table.HeaderCell>{locale.material_table_header_unit}</Table.HeaderCell>
+                            <Table.HeaderCell>{locale.material_table_header_quantityInStock}</Table.HeaderCell>
+                            <Table.HeaderCell>{locale.material_table_header_quantityToBuy}</Table.HeaderCell>
+                            <Table.HeaderCell>{locale.material_table_header_edit}</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
 
@@ -75,7 +76,7 @@ export default class MaterialTable extends Reflux.Component {
                             <Table.HeaderCell />
                             <Table.HeaderCell colSpan='5'>
                                 <Button floated='right' primary onClick={(e, data) => MaterialModalActions.showModalAddMaterial()}>
-                                    Add material
+                                    {locale.material_table_btn_add}
                                 </Button>
                             </Table.HeaderCell>
                         </Table.Row>
