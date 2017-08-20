@@ -7,16 +7,11 @@ import MaterialTableActions from './../../javascripts/actions/material-table-act
 import MaterialModalActions from './../../javascripts/actions/material-modal-actions.js';
 import MaterialModalStore from './../../javascripts/stores/MaterialModalStore';
 import locale from './../../javascripts/locale';
-//import _ from 'lodash';
 
 export default class MaterialModal extends Reflux.Component {
     constructor() {
         super();
         this.store = MaterialModalStore;
-
-        MaterialModalActions.saveOrUpdate.completed.listen(() => { // store will trigger 'completed'
-            MaterialTableActions.listMaterials();
-        });
     }
 
     isDisableSaveButton() {

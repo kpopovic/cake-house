@@ -104,20 +104,55 @@ module.exports = {
     * @param db
     * @param userId
     * @param props
+    * @example
+    *
+    * props = {
+    *  leftOff = 10, // can be NaN !
+    *  direction = 'next' | 'back' | 'first' | 'last',
+    *  limit = 10
+    * }
     * @returns {Promise}
     */
     list: async function (/** @type {knex} */ db, /** @type {number} */ userId, /** @type {object} */ props) {
-        const start = props.start;
-        const limit = props.limit;
+        const { leftOff, direction, limit } = props;
 
-        const materialIds = await db.select('id')
-            .from('materials').where('userId', userId)
-            .where("id", ">", start)
-            .whereNull("deactivated_at")
-            .orderBy('id', 'asc')
-            .limit(limit);
+        const materialIdsAsPromise = () => {
+            if (direction === 'first') {
+                return db.select('id')
+                    .from('materials').where('userId', userId)
+                    .whereNull("deactivated_at")
+                    .orderBy('id', 'asc')
+                    .limit(limit);
+            } else if (direction === 'last') {
+                return db.select('id')
+                    .from('materials').where('userId', userId)
+                    .whereNull("deactivated_at")
+                    .orderBy('id', 'desc')
+                    .limit(limit);
+            } else if (direction === 'next') {
+                return db.select('id')
+                    .from('materials').where('userId', userId)
+                    .where("id", ">", leftOff)
+                    .whereNull("deactivated_at")
+                    .orderBy('id', 'asc')
+                    .limit(limit);
+            } else if (direction === 'back') {
+                return db.select('id')
+                    .from('materials').where('userId', userId)
+                    .where("id", "<", leftOff)
+                    .whereNull("deactivated_at")
+                    .orderBy('id', 'desc')
+                    .limit(limit);
+            }
+        };
 
-        const materialIdsJoined = materialIds.map(m => m.id).join();
+        const result = await materialIdsAsPromise();
+
+        if (result.length === 0) {
+            return [];
+        };
+
+        const materialIdsJoined = result.map(m => m.id).join();
 
         let subQuery = [];
         subQuery.push(

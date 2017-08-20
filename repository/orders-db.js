@@ -231,24 +231,36 @@ module.exports = {
     *
     */
     list: async function (/** @type {knex} */ db, /** @type {number} */ userId, /** @type {object} */ props) {
-        const start = props.start;
-        const limit = props.limit;
+        const { start, direction, limit } = props;
 
-        const ids = await db.select('id')
-            .from('orders')
-            .where('userId', userId)
-            .where("id", ">", start)
-            .whereNull("deactivated_at")
-            .orderBy('id', 'asc')
-            .limit(limit);
+        const orderIdsAsPromise = () => {
+            if (direction === 'next') {
+                return db.select('id')
+                    .from('orders')
+                    .where('userId', userId)
+                    .where("id", ">", start)
+                    .whereNull("deactivated_at")
+                    .orderBy('id', 'asc')
+                    .limit(limit);
+            } else if (direction === 'back') {
+                db.select('id')
+                    .from('orders')
+                    .where('userId', userId)
+                    .where("id", "<=", start)
+                    .whereNull("deactivated_at")
+                    .orderBy('id', 'desc')
+                    .limit(limit);
+            }
+        };
 
-        if (ids.length === 0) {
+        const result = await orderIdsAsPromise();
+
+        if (result.length === 0) {
             return [];
         }
 
-        const orderIds = _.map(ids, 'id');
-
-        const result = await db.select(
+        const orderIds = _.orderBy(result).map(m => m.id);
+        const orderResult = await db.select(
             'o.id',
             'o.name',
             'o.clientName',
@@ -264,7 +276,7 @@ module.exports = {
             .whereIn("o.id", orderIds)
             .orderBy('o.id', 'asc');
 
-        const resultGrouped = _.groupBy(result, function (key) {
+        const resultGrouped = _.groupBy(orderResult, function (key) {
             return key.name;
         });
 

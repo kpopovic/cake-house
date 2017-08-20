@@ -31,28 +31,36 @@ router.put('/', async function (req, res) {
 
 router.get('/', async function (req, res) {
     try {
-        const intStart = parseInt(req.query.start); // NaN if not integer
-        const intLimit = parseInt(req.query.limit); // NaN if not integer
+        const leftOff = parseInt(req.query.leftOff); // NaN if not integer
 
-        const start = Number.isInteger(intStart) && intStart > 0 ? intStart : 0;
-        const maxLimit = 50;
-        const limit = Number.isInteger(intLimit) && (intLimit > 0 && intLimit <= maxLimit) ? intLimit : maxLimit;
-        const aLimit = limit + 1; // +1 is to see if we have next page
+        const direction = (value, defaultValue) => {
+            if (value === 'first' || value === 'last' || value === 'next' || value === 'back') {
+                return value;
+            } else {
+                return defaultValue;;
+            }
+        };
+
+        const limit = (value, defaultValue) => {
+            const maxLimit = 100; // protection limit
+            const intValue = parseInt(value);
+            if (Number.isInteger(intValue) && intValue > 0 && intValue <= maxLimit) {
+                return intValue;
+            } else {
+                return defaultValue;
+            }
+        };
 
         const props = {
-            start: start,
-            limit: aLimit
+            leftOff: leftOff,
+            direction: direction(req.query.direction, 'first'),
+            limit: limit(req.query.limit, 10)
         };
 
         const result = await materials.list(req.db, req.userId, props);
-        const size = result.length;
 
-        if (size === 0) {
+        if (result.length === 0) {
             res.json({ code: 0, type: 'LIST_MATERIAL', message: 'No active materials listed', data: { materials: [] } });
-        } else if (aLimit === size) {
-            const materials = _.slice(result, 0, limit); // remove last record
-            const nextStart = _.last(materials).id;
-            res.json({ code: 0, type: 'LIST_MATERIAL', message: 'Active materials are listed', data: { materials: materials, nextStart: nextStart } });
         } else {
             res.json({ code: 0, type: 'LIST_MATERIAL', message: 'Active materials are listed', data: { materials: result } });
         }

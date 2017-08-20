@@ -27,7 +27,7 @@ gulp.task('compile-jsx-index', function () {
         .bundle()
         .pipe(source('index.min.js'))
         .pipe(buffer())
-        .pipe(uglify())
+        //.pipe(uglify())
         .pipe(gulp.dest(jsDestPath));
 });
 

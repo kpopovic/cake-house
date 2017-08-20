@@ -21,6 +21,7 @@ const locale = new LocalizedStrings({
         material_table_header_quantityInStock: "Stanje skladišta",
         material_table_header_quantityToBuy: "Za kupiti",
         material_table_header_edit: "Izmjena",
+        material_table_btn_edit: "Izmjeni",
         material_table_btn_add: "Unesi materijal",
 
         material_table_modal_add_title: "Unos novog materijala",
@@ -34,7 +35,10 @@ const locale = new LocalizedStrings({
         material_table_modal_name_content: "Unesite naziv materijala",
 
         material_type_L: "Litra",
-        material_type_kg: "Kilogram"
+        material_type_kg: "Kilogram",
+
+        pagination_btn_next: "Naprijed",
+        pagination_btn_previous: "Nazad"
     }
 });
 

@@ -33,6 +33,7 @@ router.get('/', async function (req, res) {
     try {
         const intStart = parseInt(req.query.start); // NaN if not integer
         const intLimit = parseInt(req.query.limit); // NaN if not integer
+        const direction = req.query.direction === 'back' ? 'back' : 'next';
 
         const start = Number.isInteger(intStart) && intStart > 0 ? intStart : 0;
         const maxLimit = 50;
@@ -41,6 +42,7 @@ router.get('/', async function (req, res) {
 
         const props = {
             start: start,
+            direction: direction,
             limit: aLimit
         };
 
@@ -51,8 +53,8 @@ router.get('/', async function (req, res) {
             res.json({ code: 0, type: 'LIST_ORDER', message: 'No active orders listed', data: { orders: [] } });
         } else if (aLimit === size) {
             const orders = _.slice(result, 0, limit);
-            const nextStart = _.last(orders).id;
-            res.json({ code: 0, type: 'LIST_ORDER', message: 'Active orders are listed', data: { orders: orders, nextStart: nextStart } });
+            const leftOff = _.last(orders).id;
+            res.json({ code: 0, type: 'LIST_ORDER', message: 'Active orders are listed', data: { orders: orders, leftOff: leftOff } });
         } else {
             res.json({ code: 0, type: 'LIST_ORDER', message: 'Active orders are listed', data: { orders: result } });
         }

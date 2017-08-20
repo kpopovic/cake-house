@@ -47,7 +47,7 @@ describe('Main test', () => {
 
     });
 
-    it('get first 10 active materials', async function () {
+    it('get default (direction=first) active materials', async function () {
         const result = await dummyData.defaultMaterialList(agent);
         expect(result.data.materials.length).to.equal(10);
 
@@ -64,7 +64,41 @@ describe('Main test', () => {
 
     });
 
-    it('active materials pagination, limit = 4', async function () {
+    it('get first 10 active materials', async function () {
+        const result = await dummyData.defaultMaterialList(agent, 10);
+        expect(result.data.materials.length).to.equal(10);
+
+        result.data.materials.forEach(material => {
+            expect(material).to.haveOwnProperty('id');
+            expect(material).to.haveOwnProperty('name');
+            expect(material).to.haveOwnProperty('unit');
+            expect(material).to.haveOwnProperty('quantityInStock');
+            expect(material).to.haveOwnProperty('quantityInPending');
+            expect(material).to.haveOwnProperty('quantityInProduction');
+            expect(material).to.haveOwnProperty('quantityInDone');
+            expect(material).to.haveOwnProperty('quantityToBuy');
+        });
+
+    });
+
+    it('get last 10 active materials', async function () {
+        const result = await dummyData.lastMaterialList(agent, 10);
+        expect(result.data.materials.length).to.equal(10);
+
+        result.data.materials.forEach(material => {
+            expect(material).to.haveOwnProperty('id');
+            expect(material).to.haveOwnProperty('name');
+            expect(material).to.haveOwnProperty('unit');
+            expect(material).to.haveOwnProperty('quantityInStock');
+            expect(material).to.haveOwnProperty('quantityInPending');
+            expect(material).to.haveOwnProperty('quantityInProduction');
+            expect(material).to.haveOwnProperty('quantityInDone');
+            expect(material).to.haveOwnProperty('quantityToBuy');
+        });
+
+    });
+
+    it('active materials pagination, direction=next, limit = 4', async function () {
 
         const checkProps = function (materials) {
             materials.forEach(material => {
@@ -79,23 +113,57 @@ describe('Main test', () => {
             });
         };
 
-        const result1 = await dummyData.paginationMaterialList(agent, 0, 4);
+        const result1 = await dummyData.firstMaterialList(agent, 4);
         expect(result1.data.materials.length).to.equal(4);
         checkProps(result1.data.materials);
-        expect(result1.data).to.haveOwnProperty('nextStart');
-        const nextStart1 = result1.data.nextStart;
+        const leftOff1 = _.maxBy(result1.data.materials, function (o) { return o.id }).id;
+        expect(leftOff1).to.equal(4);
 
-        const result2 = await dummyData.paginationMaterialList(agent, nextStart1, 4);
+        const result2 = await dummyData.paginationMaterialList(agent, 'next', leftOff1, 4);
         expect(result2.data.materials.length).to.equal(4);
         checkProps(result2.data.materials);
-        expect(result2.data).to.haveOwnProperty('nextStart');
-        const nextStart2 = result2.data.nextStart;
+        const leftOff2 = _.maxBy(result2.data.materials, function (o) { return o.id }).id;
+        expect(leftOff2).to.equal(8);
 
-        const result3 = await dummyData.paginationMaterialList(agent, nextStart2, 4);
+        const result3 = await dummyData.paginationMaterialList(agent, 'next', leftOff2, 2);
         expect(result3.data.materials.length).to.equal(2);
         checkProps(result3.data.materials);
-        expect(result3.data).to.not.haveOwnProperty('nextStart');
+        const leftOff3 = _.maxBy(result3.data.materials, function (o) { return o.id }).id;
+        expect(leftOff3).to.equal(10);
+    });
 
+    it('active materials pagination, direction=back, limit = 4', async function () {
+
+        const checkProps = function (materials) {
+            materials.forEach(material => {
+                expect(material).to.haveOwnProperty('id');
+                expect(material).to.haveOwnProperty('name');
+                expect(material).to.haveOwnProperty('unit');
+                expect(material).to.haveOwnProperty('quantityInStock');
+                expect(material).to.haveOwnProperty('quantityInPending');
+                expect(material).to.haveOwnProperty('quantityInProduction');
+                expect(material).to.haveOwnProperty('quantityInDone');
+                expect(material).to.haveOwnProperty('quantityToBuy');
+            });
+        };
+
+        const result1 = await dummyData.lastMaterialList(agent, 4);
+        expect(result1.data.materials.length).to.equal(4);
+        checkProps(result1.data.materials);
+        const leftOff1 = _.minBy(result1.data.materials, function (o) { return o.id }).id;
+        expect(leftOff1).to.equal(7);
+
+        const result2 = await dummyData.paginationMaterialList(agent, 'back', leftOff1, 4);
+        expect(result2.data.materials.length).to.equal(4);
+        checkProps(result2.data.materials);
+        const leftOff2 = _.minBy(result2.data.materials, function (o) { return o.id }).id;
+        expect(leftOff2).to.equal(3);
+
+        const result3 = await dummyData.paginationMaterialList(agent, 'back', leftOff2, 2);
+        expect(result3.data.materials.length).to.equal(2);
+        checkProps(result3.data.materials);
+        const leftOff3 = _.minBy(result3.data.materials, function (o) { return o.id }).id;
+        expect(leftOff3).to.equal(1);
     });
 
     it('update material', async function () {
@@ -179,17 +247,17 @@ describe('Main test', () => {
     it('active products pagination, limit = 9', async function () {
         const result1 = await dummyData.paginationProductList(agent, 0, 9);
         expect(result1.data.products.length).to.equal(9);
-        expect(result1.data).to.haveOwnProperty('nextStart');
-        const nextStart1 = result1.data.nextStart;
+        expect(result1.data).to.haveOwnProperty('leftOff');
+        const leftOff1 = result1.data.leftOff;
 
-        const result2 = await dummyData.paginationProductList(agent, nextStart1, 9);
+        const result2 = await dummyData.paginationProductList(agent, leftOff1, 9);
         expect(result2.data.products.length).to.equal(9);
-        expect(result2.data).to.haveOwnProperty('nextStart');
-        const nextStart2 = result2.data.nextStart;
+        expect(result2.data).to.haveOwnProperty('leftOff');
+        const leftOff2 = result2.data.leftOff;
 
-        const result3 = await dummyData.paginationProductList(agent, nextStart2, 2);
+        const result3 = await dummyData.paginationProductList(agent, leftOff2, 2);
         expect(result3.data.products.length).to.equal(2);
-        expect(result3.data).to.not.haveOwnProperty('nextStart');
+        expect(result3.data).to.not.haveOwnProperty('leftOff');
     });
 
     it('update product', async function () {
@@ -264,22 +332,22 @@ describe('Main test', () => {
     it('active orders pagination, limit = 9', async function () {
         const result1 = await dummyData.paginationOrderList(agent, 0, 9);
         expect(result1.data.orders.length).to.equal(9);
-        expect(result1.data).to.haveOwnProperty('nextStart');
-        const nextStart1 = result1.data.nextStart;
+        expect(result1.data).to.haveOwnProperty('leftOff');
+        const leftOff1 = result1.data.leftOff;
 
-        const result2 = await dummyData.paginationOrderList(agent, nextStart1, 9);
+        const result2 = await dummyData.paginationOrderList(agent, leftOff1, 9);
         expect(result2.data.orders.length).to.equal(9);
-        expect(result2.data).to.haveOwnProperty('nextStart');
-        const nextStart2 = result2.data.nextStart;
+        expect(result2.data).to.haveOwnProperty('leftOff');
+        const leftOff2 = result2.data.leftOff;
 
-        const result3 = await dummyData.paginationOrderList(agent, nextStart2, 9);
+        const result3 = await dummyData.paginationOrderList(agent, leftOff2, 9);
         expect(result3.data.orders.length).to.equal(9);
-        expect(result3.data).to.haveOwnProperty('nextStart');
-        const nextStart3 = result3.data.nextStart;
+        expect(result3.data).to.haveOwnProperty('leftOff');
+        const leftOff3 = result3.data.leftOff;
 
-        const result4 = await dummyData.paginationOrderList(agent, nextStart3, 3);
+        const result4 = await dummyData.paginationOrderList(agent, leftOff3, 3);
         expect(result4.data.orders.length).to.equal(3);
-        expect(result4.data).to.not.haveOwnProperty('nextStart');
+        expect(result4.data).to.not.haveOwnProperty('leftOff');
     });
 
     it('update order, state: pending -> production', async function () {

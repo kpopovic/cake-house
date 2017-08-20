@@ -216,22 +216,35 @@ module.exports = {
      *
      */
     list: async function (/** @type {knex} */ db, /** @type {number} */ userId, /** @type {object} */ props) {
-        const start = props.start;
-        const limit = props.limit;
+        const { start, direction, limit } = props;
 
-        const ids = await db.select('id')
-            .from('products')
-            .where('userId', userId)
-            .where("id", ">", start)
-            .whereNull("deactivated_at")
-            .orderBy('id', 'asc')
-            .limit(limit);
+        const productIdsAsPromise = () => {
+            if (direction === 'next') {
+                return db.select('id')
+                    .from('products')
+                    .where('userId', userId)
+                    .where("id", ">", start)
+                    .whereNull("deactivated_at")
+                    .orderBy('id', 'asc')
+                    .limit(limit);
+            } else if (direction === 'back') {
+                return db.select('id')
+                    .from('products')
+                    .where('userId', userId)
+                    .where("id", "<=", start)
+                    .whereNull("deactivated_at")
+                    .orderBy('id', 'desc')
+                    .limit(limit);
+            }
+        };
 
-        if (ids.length === 0) {
+        const result = await productIdsAsPromise();
+
+        if (result.length === 0) {
             return [];
         };
 
-        const productIds = _.map(ids, 'id');
+        const productIds = _.orderBy(result).map(m => m.id);
         const productsResult = await db.select(
             'p.id',
             'p.name',
