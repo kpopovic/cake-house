@@ -4,7 +4,6 @@ import Reflux from 'reflux';
 
 const MaterialTableActions = Reflux.createActions([
     "listFirstPage",
-    "listLastPage",
     "listNextPage",
     "listPreviousPage"
 ]);

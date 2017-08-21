@@ -34,10 +34,10 @@ router.get('/', async function (req, res) {
         const leftOff = parseInt(req.query.leftOff); // NaN if not integer
 
         const direction = (value, defaultValue) => {
-            if (value === 'first' || value === 'last' || value === 'next' || value === 'back') {
+            if (value === 'first' || value === 'next' || value === 'back') {
                 return value;
             } else {
-                return defaultValue;;
+                return defaultValue;
             }
         };
 

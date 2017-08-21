@@ -2,24 +2,24 @@
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
 import locale from '../javascripts/locale.js';
 import Reflux from 'reflux';
-import { buildStore } from './../javascripts/stores/store-factory';
 import PaginationActions from './../javascripts/actions/pagination-actions';
 
 export default class Pagination extends Reflux.Component {
     constructor(props) {
         super(props);
+        this.state = props;
+    }
 
-        this.storeId = props.storeId;
-        this.store = buildStore(this.storeId); // e.g. materials, products, orders, ...
+    componentWillReceiveProps(nextProps) {
+        this.setState(nextProps);
     }
 
     render() {
-        const rootNodeName = Object.keys(this.state)[0];
-        const { hasPrevious, hasNext } = this.state[rootNodeName];
-        console.log("Pagination=" + JSON.stringify(this.state, null, 2));
+        const { storeId, hasPrevious, hasNext } = this.state;
         const visible = hasPrevious || hasNext;
 
         return (
@@ -29,24 +29,20 @@ export default class Pagination extends Reflux.Component {
                     content={locale.pagination_btn_previous}
                     icon='left arrow'
                     labelPosition='left'
-                    onClick={(e, data) => { PaginationActions.pagination(Object.assign({}, { storeId: this.storeId, direction: 'back' })) }} />
+                    onClick={(e, data) => { PaginationActions.pagination({ storeId: storeId, direction: 'back' }) }} />
                 <Button
                     disabled={!hasNext}
                     content={locale.pagination_btn_next}
                     icon='right arrow'
                     labelPosition='right'
-                    onClick={(e, data) => { PaginationActions.pagination(Object.assign({}, { storeId: this.storeId, direction: 'next' })) }} />
+                    onClick={(e, data) => { PaginationActions.pagination({ storeId: storeId, direction: 'next' }) }} />
             </div>
         )
     }
 }
 
-/*
 Pagination.propTypes = {
     storeId: PropTypes.string.isRequired,
-    limit: PropTypes.number
+    hasPrevious: PropTypes.bool.isRequired,
+    hasNext: PropTypes.bool.isRequired,
 };
-
-Pagination.defaultProps = {
-    limit: 10
-};*/

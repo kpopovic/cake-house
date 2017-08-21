@@ -347,11 +347,6 @@ module.exports = {
         return result.body;
     },
 
-    lastMaterialList: async function (agent, limit) {
-        const result = await agent.get(`/v1/material?direction=last&limit=${limit}`).set('Cookie', COOKIE);
-        return result.body;
-    },
-
     paginationMaterialList: async function (agent, direction, leftOff, limit) {
         const result = await agent.get(`/v1/material?direction=${direction}&leftOff=${leftOff}&limit=${limit}`).set('Cookie', COOKIE);
         return result.body;

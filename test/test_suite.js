@@ -81,24 +81,7 @@ describe('Main test', () => {
 
     });
 
-    it('get last 10 active materials', async function () {
-        const result = await dummyData.lastMaterialList(agent, 10);
-        expect(result.data.materials.length).to.equal(10);
-
-        result.data.materials.forEach(material => {
-            expect(material).to.haveOwnProperty('id');
-            expect(material).to.haveOwnProperty('name');
-            expect(material).to.haveOwnProperty('unit');
-            expect(material).to.haveOwnProperty('quantityInStock');
-            expect(material).to.haveOwnProperty('quantityInPending');
-            expect(material).to.haveOwnProperty('quantityInProduction');
-            expect(material).to.haveOwnProperty('quantityInDone');
-            expect(material).to.haveOwnProperty('quantityToBuy');
-        });
-
-    });
-
-    it('active materials pagination, direction=next, limit = 4', async function () {
+    it('active materials pagination, direction=next and direction=back', async function () {
 
         const checkProps = function (materials) {
             materials.forEach(material => {
@@ -113,6 +96,7 @@ describe('Main test', () => {
             });
         };
 
+        // ----------------------- NEXT -----------------------
         const result1 = await dummyData.firstMaterialList(agent, 4);
         expect(result1.data.materials.length).to.equal(4);
         checkProps(result1.data.materials);
@@ -128,42 +112,23 @@ describe('Main test', () => {
         const result3 = await dummyData.paginationMaterialList(agent, 'next', leftOff2, 2);
         expect(result3.data.materials.length).to.equal(2);
         checkProps(result3.data.materials);
-        const leftOff3 = _.maxBy(result3.data.materials, function (o) { return o.id }).id;
-        expect(leftOff3).to.equal(10);
-    });
+        const minLeftOff3 = _.minBy(result3.data.materials, function (o) { return o.id }).id; // start point for 'back' direction
+        const maxLeftOff3 = _.maxBy(result3.data.materials, function (o) { return o.id }).id;
+        expect(maxLeftOff3).to.equal(10);
 
-    it('active materials pagination, direction=back, limit = 4', async function () {
+        // ----------------------- BACK -----------------------
+        const result4 = await dummyData.paginationMaterialList(agent, 'back', minLeftOff3, 4);
+        expect(result4.data.materials.length).to.equal(4);
+        checkProps(result4.data.materials);
+        const leftOff4 = _.minBy(result4.data.materials, function (o) { return o.id }).id;
+        expect(leftOff4).to.equal(5);
 
-        const checkProps = function (materials) {
-            materials.forEach(material => {
-                expect(material).to.haveOwnProperty('id');
-                expect(material).to.haveOwnProperty('name');
-                expect(material).to.haveOwnProperty('unit');
-                expect(material).to.haveOwnProperty('quantityInStock');
-                expect(material).to.haveOwnProperty('quantityInPending');
-                expect(material).to.haveOwnProperty('quantityInProduction');
-                expect(material).to.haveOwnProperty('quantityInDone');
-                expect(material).to.haveOwnProperty('quantityToBuy');
-            });
-        };
+        const result5 = await dummyData.paginationMaterialList(agent, 'back', leftOff4, 4);
+        expect(result5.data.materials.length).to.equal(4);
+        checkProps(result5.data.materials);
+        const leftOff5 = _.minBy(result5.data.materials, function (o) { return o.id }).id;
+        expect(leftOff5).to.equal(1);
 
-        const result1 = await dummyData.lastMaterialList(agent, 4);
-        expect(result1.data.materials.length).to.equal(4);
-        checkProps(result1.data.materials);
-        const leftOff1 = _.minBy(result1.data.materials, function (o) { return o.id }).id;
-        expect(leftOff1).to.equal(7);
-
-        const result2 = await dummyData.paginationMaterialList(agent, 'back', leftOff1, 4);
-        expect(result2.data.materials.length).to.equal(4);
-        checkProps(result2.data.materials);
-        const leftOff2 = _.minBy(result2.data.materials, function (o) { return o.id }).id;
-        expect(leftOff2).to.equal(3);
-
-        const result3 = await dummyData.paginationMaterialList(agent, 'back', leftOff2, 2);
-        expect(result3.data.materials.length).to.equal(2);
-        checkProps(result3.data.materials);
-        const leftOff3 = _.minBy(result3.data.materials, function (o) { return o.id }).id;
-        expect(leftOff3).to.equal(1);
     });
 
     it('update material', async function () {

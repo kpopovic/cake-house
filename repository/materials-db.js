@@ -108,7 +108,7 @@ module.exports = {
     *
     * props = {
     *  leftOff = 10, // can be NaN !
-    *  direction = 'next' | 'back' | 'first' | 'last',
+    *  direction = 'next' | 'back' | 'first'
     *  limit = 10
     * }
     * @returns {Promise}
@@ -116,32 +116,28 @@ module.exports = {
     list: async function (/** @type {knex} */ db, /** @type {number} */ userId, /** @type {object} */ props) {
         const { leftOff, direction, limit } = props;
 
+        const ORDER = (direction === 'first' || direction === 'next') ? 'asc' : 'desc';
+
         const materialIdsAsPromise = () => {
             if (direction === 'first') {
                 return db.select('id')
                     .from('materials').where('userId', userId)
                     .whereNull("deactivated_at")
-                    .orderBy('id', 'asc')
-                    .limit(limit);
-            } else if (direction === 'last') {
-                return db.select('id')
-                    .from('materials').where('userId', userId)
-                    .whereNull("deactivated_at")
-                    .orderBy('id', 'desc')
+                    .orderBy('id', ORDER)
                     .limit(limit);
             } else if (direction === 'next') {
                 return db.select('id')
                     .from('materials').where('userId', userId)
                     .where("id", ">", leftOff)
                     .whereNull("deactivated_at")
-                    .orderBy('id', 'asc')
+                    .orderBy('id', ORDER)
                     .limit(limit);
             } else if (direction === 'back') {
                 return db.select('id')
                     .from('materials').where('userId', userId)
                     .where("id", "<", leftOff)
                     .whereNull("deactivated_at")
-                    .orderBy('id', 'desc')
+                    .orderBy('id', ORDER)
                     .limit(limit);
             }
         };
@@ -205,7 +201,8 @@ module.exports = {
             db.raw('SUM(quantityInDone) AS quantityInDone'),
             db.raw('SUM(quantityToBuy) AS quantityToBuy')
         ).from(db.raw(subQuery.join(' ')))
-            .groupBy('userId', 'id');
+            .groupBy('userId', 'id')
+            .orderBy('id', ORDER);
     },
 
     /**

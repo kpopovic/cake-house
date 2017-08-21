@@ -13,18 +13,20 @@ export default class Material extends Reflux.Component {
         super();
 
         MaterialModalActions.saveOrUpdate.completed.listen(() => { // material model store will trigger 'completed'
-            console.log("saveOrUpdate fired");
             MaterialTableActions.listFirstPage(); // show first page
         });
 
         PaginationActions.pagination.listen(request => {
-            console.log("pagination fired=" + JSON.stringify(request, null, 2));
-            MaterialTableActions.listNextPage();
+            const isNext = request.direction === 'next';
+            if (isNext) {
+                MaterialTableActions.listNextPage();
+            } else {
+                MaterialTableActions.listPreviousPage();
+            }
         });
     }
 
     componentDidMount() {
-        console.log("Material.componentDidMount");
         MaterialTableActions.listFirstPage(); // run only once on page load
     }
 
@@ -34,7 +36,7 @@ export default class Material extends Reflux.Component {
                 <Grid.Column>
                 </Grid.Column>
                 <Grid.Column width={8}>
-                    <MaterialTable id={1} />
+                    <MaterialTable />
                 </Grid.Column>
                 <Grid.Column>
                 </Grid.Column>
