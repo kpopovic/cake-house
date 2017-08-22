@@ -2,8 +2,8 @@
 
 import React, { Component } from 'react';
 import { Button, Header, Modal, Form } from 'semantic-ui-react';
+import PropTypes from 'prop-types';
 import Reflux from 'reflux';
-import MaterialTableActions from './../../javascripts/actions/material-table-actions';
 import MaterialModalActions from './../../javascripts/actions/material-modal-actions.js';
 import MaterialModalStore from './../../javascripts/stores/MaterialModalStore';
 import locale from './../../javascripts/locale';
@@ -11,7 +11,18 @@ import locale from './../../javascripts/locale';
 export default class MaterialModal extends Reflux.Component {
     constructor() {
         super();
+
         this.store = MaterialModalStore;
+
+        MaterialModalActions.createOrUpdate.completed.listen((result) => {
+            if (result.action === 'update') {
+                this.props.onUpdate();
+            } else if (result.action === 'create') {
+                this.props.onCreate();
+            } else {
+                console.warn('Unknown modal action=' + result.action);
+            }
+        });
     }
 
     isDisableSaveButton() {
@@ -71,7 +82,7 @@ export default class MaterialModal extends Reflux.Component {
                         icon='checkmark'
                         labelPosition='right'
                         content={locale.material_table_modal_btn_add}
-                        onClick={(e, data) => MaterialModalActions.saveOrUpdate()}
+                        onClick={(e, data) => MaterialModalActions.createOrUpdate()}
                     />
                 </Modal.Actions>
             </Modal>
@@ -83,3 +94,8 @@ const options = [
     { key: 'L', text: `${locale.material_type_L}`, value: 'L' },
     { key: 'kg', text: `${locale.material_type_kg}`, value: 'kg' }
 ]
+
+MaterialModal.propTypes = {
+    onCreate: PropTypes.func.isRequired,
+    onUpdate: PropTypes.func.isRequired
+};

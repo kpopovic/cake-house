@@ -11,6 +11,6 @@ let MaterialModalActions = Reflux.createActions([
     "setFormFieldQuantityInStock"
 ]);
 
-MaterialModalActions.saveOrUpdate = Reflux.createAction({ asyncResult: true });
+MaterialModalActions.createOrUpdate = Reflux.createAction({ asyncResult: true });
 
 export default MaterialModalActions;

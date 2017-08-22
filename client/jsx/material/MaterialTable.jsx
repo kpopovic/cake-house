@@ -5,27 +5,33 @@ import { Button, Grid, Icon, Image, Table } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
 import MaterialModal from './MaterialModal';
+import MaterialSearchFilter from './MaterialSearchFilter';
 import Pagination from './../Pagination';
-import MaterialModalActions from './../../javascripts/actions/material-modal-actions';
+import MaterialModalActions from './../../javascripts/actions/material-modal-actions.js';
 import MaterialTableActions from './../../javascripts/actions/material-table-actions';
-import { buildStore } from './../../javascripts/stores/MaterialTableStore';
+import { buildStore as tableStore } from './../../javascripts/stores/MaterialTableStore';
 import locale from './../../javascripts/locale';
 
 export default class MaterialTable extends Reflux.Component {
-    constructor() {
-        super();
-        this.store = buildStore(10);
+    constructor(props) {
+        super(props);
+        this.store = tableStore(props.pageSize);
+    }
+
+    componentDidMount() {
+        MaterialTableActions.listFirstPage(); // run only once on page load
     }
 
     fillTableBody(materials) {
         if (Array.isArray(materials) && materials.length > 0) {
             const itemList = materials.map((item, index) => {
+                const isNegative = item.quantityToBuy > 0;
                 return (
                     <Table.Row key={index}>
-                        <Table.Cell>{item.name}</Table.Cell>
-                        <Table.Cell>{item.unit}</Table.Cell>
-                        <Table.Cell>{item.quantityInStock}</Table.Cell>
-                        <Table.Cell>{item.quantityToBuy}</Table.Cell>
+                        <Table.Cell negative={isNegative}>{item.name}</Table.Cell>
+                        <Table.Cell negative={isNegative}>{item.unit}</Table.Cell>
+                        <Table.Cell negative={isNegative}>{item.quantityInStock}</Table.Cell>
+                        <Table.Cell negative={isNegative}>{item.quantityToBuy}</Table.Cell>
                         <Table.Cell>
                             <Button onClick={(e, data) => MaterialModalActions.showModalUpdateMaterial(item)}>
                                 {locale.material_table_btn_edit}
@@ -45,7 +51,7 @@ export default class MaterialTable extends Reflux.Component {
             return (
                 <Table.Body>
                     <Table.Row key={1}>
-                        <Table.Cell colSpan='5'>
+                        <Table.Cell colSpan={5}>
                             <Image fluid src={locale.material_table_empty} />
                         </Table.Cell>
                     </Table.Row>
@@ -59,7 +65,11 @@ export default class MaterialTable extends Reflux.Component {
 
         return (
             <div>
-                <MaterialModal />
+                <MaterialModal
+                    onCreate={() => MaterialTableActions.listFirstPage()}
+                    onUpdate={() => MaterialTableActions.listFirstPage()}
+                />
+                <MaterialSearchFilter onSearch={data => { console.log("Search=" + JSON.stringify(data, 2, null)) }} />
                 <Table basic>
                     <Table.Header>
                         <Table.Row>
@@ -80,7 +90,12 @@ export default class MaterialTable extends Reflux.Component {
                                 <Button floated='right' primary onClick={(e, data) => MaterialModalActions.showModalAddMaterial()}>
                                     {locale.material_table_btn_add}
                                 </Button>
-                                <Pagination storeId='mtStore-1' hasNext={hasNext} hasPrevious={hasPrevious} />
+                                <Pagination
+                                    hasNext={hasNext}
+                                    hasPrevious={hasPrevious}
+                                    onPrevious={() => MaterialTableActions.listPreviousPage()}
+                                    onNext={() => MaterialTableActions.listNextPage()}
+                                />
                             </Table.HeaderCell>
                         </Table.Row>
                     </Table.Footer>

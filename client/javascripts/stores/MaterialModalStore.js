@@ -12,9 +12,9 @@ export default class MaterialModalStore extends Reflux.Store {
         this.state = { mStore: { open: false } };
     }
 
-    onSaveOrUpdate() {
+    onCreateOrUpdate() {
+        const { id } = this.state.mStore;
         const thePromise = () => {
-            const { id } = this.state.mStore;
             const data = _.pick(this.state.mStore, ['name', 'unit', 'quantityInStock']);
             if (id) {
                 return $.ajax({
@@ -40,16 +40,16 @@ export default class MaterialModalStore extends Reflux.Store {
         promise.done(data => {
             if (data.code === 0) {
                 this.onResetStore();
-                MaterialModalActions.saveOrUpdate.completed(this.state.mStore);
+                MaterialModalActions.createOrUpdate.completed({ action: id ? 'update' : 'create' });
             } else {
                 console.error(JSON.stringify(data, null, 2));
-                MaterialModalActions.saveOrUpdate.failed(this.state.mStore);
+                MaterialModalActions.createOrUpdate.failed();
             }
         });
 
         promise.fail(error => {
             console.error(error);
-            MaterialModalActions.saveOrUpdate.failed(error);
+            MaterialModalActions.createOrUpdate.failed(error);
         });
     }
 
