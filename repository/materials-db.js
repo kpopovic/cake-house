@@ -114,31 +114,67 @@ module.exports = {
     * @returns {Promise}
     */
     list: async function (/** @type {knex} */ db, /** @type {number} */ userId, /** @type {object} */ props) {
-        const { leftOff, direction, limit } = props;
+        const { leftOff, direction, limit, filter } = props;
 
         const ORDER = (direction === 'first' || direction === 'next') ? 'asc' : 'desc';
 
         const materialIdsAsPromise = () => {
             if (direction === 'first') {
-                return db.select('id')
-                    .from('materials').where('userId', userId)
-                    .whereNull("deactivated_at")
-                    .orderBy('id', ORDER)
-                    .limit(limit);
+                if (filter.name) {
+                    return db.select('id')
+                        .from('materials')
+                        .where('userId', userId)
+                        .whereNull("deactivated_at")
+                        .where('name', 'like', `${filter.name}`)
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                } else {
+                    return db.select('id')
+                        .from('materials')
+                        .where('userId', userId)
+                        .whereNull("deactivated_at")
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                }
             } else if (direction === 'next') {
-                return db.select('id')
-                    .from('materials').where('userId', userId)
-                    .where("id", ">", leftOff)
-                    .whereNull("deactivated_at")
-                    .orderBy('id', ORDER)
-                    .limit(limit);
+                if (filter.name) {
+                    return db.select('id')
+                        .from('materials')
+                        .where('userId', userId)
+                        .where("id", ">", leftOff)
+                        .whereNull("deactivated_at")
+                        .where('name', 'like', `${filter.name}`)
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                } else {
+                    return db.select('id')
+                        .from('materials')
+                        .where('userId', userId)
+                        .where("id", ">", leftOff)
+                        .whereNull("deactivated_at")
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                }
+
             } else if (direction === 'back') {
-                return db.select('id')
-                    .from('materials').where('userId', userId)
-                    .where("id", "<", leftOff)
-                    .whereNull("deactivated_at")
-                    .orderBy('id', ORDER)
-                    .limit(limit);
+                if (filter.name) {
+                    return db.select('id')
+                        .from('materials')
+                        .where('userId', userId)
+                        .where("id", "<", leftOff)
+                        .whereNull("deactivated_at")
+                        .where('name', 'like', `${filter.name}`)
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                } else {
+                    return db.select('id')
+                        .from('materials')
+                        .where('userId', userId)
+                        .where("id", "<", leftOff)
+                        .whereNull("deactivated_at")
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                }
             }
         };
 

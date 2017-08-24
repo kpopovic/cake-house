@@ -16,6 +16,7 @@ const locale = new LocalizedStrings({
         index_page_signout: "Izlaz",
 
         material_table_empty: "https://semantic-ui.com/images/wireframe/media-paragraph.png",
+        material_table_search: "Pretraga materijala",
         material_table_header_name: "Naziv",
         material_table_header_unit: "Jedinica",
         material_table_header_quantityInStock: "Stanje skladišta",
@@ -31,7 +32,6 @@ const locale = new LocalizedStrings({
         material_table_modal_quantityInStock: "Stanje skladišta",
         material_table_modal_quantityInStock_content: "Unesite stanje skladišta",
         material_table_modal_unit_content: "Unesite jedinicu materijala",
-
         material_table_modal_name_content: "Unesite naziv materijala",
 
         material_type_L: "Litra",

@@ -1,14 +1,15 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { Input, Checkbox } from 'semantic-ui-react';
+import { Input } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
+import locale from './../../javascripts/locale.js';
 
 export default class MaterialSearchFilter extends Reflux.Component {
     constructor() {
         super();
-        this.state = { name: null, isToBuy: false };
+        this.state = { name: null };
     }
 
     handleOnChange(newState) {
@@ -18,20 +19,11 @@ export default class MaterialSearchFilter extends Reflux.Component {
     }
 
     render() {
-        const { name, toBuyChecked } = this.state;
+        const { name } = this.state;
         return (
             <Input
-                label={
-                    <Checkbox
-                        label='Za kupiti'
-                        checked={toBuyChecked}
-                        onChange={(e, { checked }) => {
-                            this.handleOnChange(Object.assign({}, this.state, { isToBuy: checked }))
-                        }}
-                    />
-                }
-                labelPosition='right'
-                placeholder='Pretraga materijala'
+                icon="search"
+                placeholder={locale.material_table_search}
                 onChange={(e, { value }) => {
                     this.handleOnChange(Object.assign({}, this.state, { name: value }))
                 }}

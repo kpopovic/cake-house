@@ -61,15 +61,14 @@ export default class MaterialTable extends Reflux.Component {
     }
 
     render() {
-        const { list, hasNext, hasPrevious } = this.state.mtStore;
-
+        const { list, hasNext, hasPrevious, filter } = this.state.mtStore;
         return (
             <div>
                 <MaterialModal
                     onCreate={() => MaterialTableActions.listFirstPage()}
                     onUpdate={() => MaterialTableActions.listFirstPage()}
                 />
-                <MaterialSearchFilter onSearch={data => { console.log("Search=" + JSON.stringify(data, 2, null)) }} />
+                <MaterialSearchFilter onSearch={filter => MaterialTableActions.listFirstPage(filter)} />
                 <Table basic>
                     <Table.Header>
                         <Table.Row>
@@ -110,5 +109,5 @@ MaterialTable.propTypes = {
 };
 
 MaterialTable.defaultProps = {
-    pageSize: 10
+    pageSize: 3
 };

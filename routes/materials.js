@@ -31,7 +31,9 @@ router.put('/', async function (req, res) {
 
 router.get('/', async function (req, res) {
     try {
+        console.log("materials - getAll=" + JSON.stringify(req.query, null, 2));
         const leftOff = parseInt(req.query.leftOff); // NaN if not integer
+        const filterName = req.query.filter ? req.query.filter.name : null;
 
         const direction = (value, defaultValue) => {
             if (value === 'first' || value === 'next' || value === 'back') {
@@ -54,7 +56,10 @@ router.get('/', async function (req, res) {
         const props = {
             leftOff: leftOff,
             direction: direction(req.query.direction, 'first'),
-            limit: limit(req.query.limit, 10)
+            limit: limit(req.query.limit, 10),
+            filter: {
+                name: filterName
+            }
         };
 
         const result = await materials.list(req.db, req.userId, props);
