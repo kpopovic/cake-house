@@ -115,7 +115,6 @@ module.exports = {
     */
     list: async function (/** @type {knex} */ db, /** @type {number} */ userId, /** @type {object} */ props) {
         const { leftOff, direction, limit, filter } = props;
-
         const ORDER = (direction === 'first' || direction === 'next') ? 'asc' : 'desc';
 
         const materialIdsAsPromise = () => {
@@ -155,7 +154,6 @@ module.exports = {
                         .orderBy('id', ORDER)
                         .limit(limit);
                 }
-
             } else if (direction === 'back') {
                 if (filter.name) {
                     return db.select('id')

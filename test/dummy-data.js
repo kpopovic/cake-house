@@ -53,7 +53,7 @@ let materials = [
     },
     {
         name: 'DummyMaterial10',
-        unit: 'L',
+        unit: 'piece',
         quantityInStock: 999.99
     }
 ];
@@ -120,7 +120,7 @@ module.exports = {
             db.schema.createTable('materials', function (table) {
                 table.increments();
                 table.string('name').notNullable();
-                table.enum('unit', ['kg', 'L']).notNullable();
+                table.enum('unit', ['kg', 'L', 'piece']).notNullable();
                 table.integer('userId').unsigned().references('id').inTable('users').notNullable();
                 table.decimal('quantityInStock').unsigned().notNullable().defaultTo(0);
                 table.dateTime('created_at').defaultTo(db.fn.now()).notNullable();
@@ -357,8 +357,13 @@ module.exports = {
         return result.body;
     },
 
-    paginationProductList: async function (agent, start, limit) {
-        const result = await agent.get(`/v1/product?start=${start}&limit=${limit}`).set('Cookie', COOKIE);
+    firstProductList: async function (agent, limit) {
+        const result = await agent.get(`/v1/product?direction=first&limit=${limit}`).set('Cookie', COOKIE);
+        return result.body;
+    },
+
+    paginationProductList: async function (agent, direction, leftOff, limit) {
+        const result = await agent.get(`/v1/product?direction=${direction}&leftOff=${leftOff}&limit=${limit}`).set('Cookie', COOKIE);
         return result.body;
     },
 

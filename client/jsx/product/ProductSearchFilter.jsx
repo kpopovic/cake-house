@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import Reflux from 'reflux';
 import locale from './../../javascripts/locale.js';
 
-export default class MaterialSearchFilter extends Reflux.Component {
+export default class ProductSearchFilter extends Reflux.Component {
     constructor() {
         super();
         this.state = { name: null };
@@ -23,7 +23,7 @@ export default class MaterialSearchFilter extends Reflux.Component {
         return (
             <Input
                 icon="search"
-                placeholder={locale.material_table_search}
+                placeholder={locale.product_table_search}
                 onChange={(e, { value }) => {
                     this.handleOnChange(Object.assign({}, this.state, { name: value }))
                 }}
@@ -32,6 +32,6 @@ export default class MaterialSearchFilter extends Reflux.Component {
     }
 }
 
-MaterialSearchFilter.propTypes = {
+ProductSearchFilter.propTypes = {
     onSearch: PropTypes.func.isRequired
 };

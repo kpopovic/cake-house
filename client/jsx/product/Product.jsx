@@ -2,9 +2,9 @@
 
 import React, { Component } from 'react';
 import { Grid } from 'semantic-ui-react';
-import MaterialTable from './MaterialTable';
+import ProductTable from './ProductTable';
 
-export default class Material extends React.Component {
+export default class Product extends React.Component {
     constructor() {
         super();
     }
@@ -15,7 +15,7 @@ export default class Material extends React.Component {
                 <Grid.Column>
                 </Grid.Column>
                 <Grid.Column width={7}>
-                    <MaterialTable />
+                    <ProductTable />
                 </Grid.Column>
                 <Grid.Column>
                 </Grid.Column>

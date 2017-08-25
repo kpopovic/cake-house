@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { Button, Grid, Icon, Image, Table } from 'semantic-ui-react';
+import { Button, Grid, Image, Table } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
 import MaterialModal from './MaterialModal';
@@ -29,7 +29,7 @@ export default class MaterialTable extends Reflux.Component {
                 return (
                     <Table.Row key={index}>
                         <Table.Cell negative={isNegative}>{item.name}</Table.Cell>
-                        <Table.Cell negative={isNegative}>{item.unit}</Table.Cell>
+                        <Table.Cell negative={isNegative}>{locale[`material_unit_${item.unit}`]}</Table.Cell>
                         <Table.Cell negative={isNegative}>{item.quantityInStock}</Table.Cell>
                         <Table.Cell negative={isNegative}>{item.quantityToBuy}</Table.Cell>
                         <Table.Cell>
@@ -52,7 +52,7 @@ export default class MaterialTable extends Reflux.Component {
                 <Table.Body>
                     <Table.Row key={1}>
                         <Table.Cell colSpan={5}>
-                            <Image fluid src={locale.material_table_empty} />
+                            <Image fluid src={locale.table_empty} />
                         </Table.Cell>
                     </Table.Row>
                 </Table.Body>

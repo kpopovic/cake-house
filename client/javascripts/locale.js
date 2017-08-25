@@ -15,7 +15,9 @@ const locale = new LocalizedStrings({
         index_page_material_menu_title: "Materijal",
         index_page_signout: "Izlaz",
 
-        material_table_empty: "https://semantic-ui.com/images/wireframe/media-paragraph.png",
+        table_empty: "https://semantic-ui.com/images/wireframe/media-paragraph.png",
+
+        // material table
         material_table_search: "Pretraga materijala",
         material_table_header_name: "Naziv",
         material_table_header_unit: "Jedinica",
@@ -34,9 +36,19 @@ const locale = new LocalizedStrings({
         material_table_modal_unit_content: "Unesite jedinicu materijala",
         material_table_modal_name_content: "Unesite naziv materijala",
 
-        material_type_L: "Litra",
-        material_type_kg: "Kilogram",
+        material_unit_L: "Litra",
+        material_unit_kg: "Kilogram",
+        material_unit_piece: "Komad",
 
+        // product table
+        product_table_search: "Pretraga proizvoda",
+        product_table_header_name: "Naziv",
+        product_table_header_quantity: "Broj materijala",
+        product_table_header_edit: "Izmjena",
+        product_table_btn_edit: "Izmjeni",
+        product_table_btn_add: "Unesi proizvod",
+
+        // pagination
         pagination_btn_next: "Naprijed",
         pagination_btn_previous: "Nazad"
     }

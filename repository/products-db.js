@@ -196,7 +196,8 @@ module.exports = {
      *        "quantityInPending": 2878.00,
      *        "quantityInProduction": 0.00,
      *        "quantityInDone": 0.00,
-     *        "quantityToBuy": 0.00
+     *        "quantityToBuy": 0.00,
+     *        "quantityRequiredForProduction": 1
      *      },
      *      {
      *        "id": 3,
@@ -205,7 +206,8 @@ module.exports = {
      *        "quantityInPending": 1718.00,
      *        "quantityInProduction": 0.00,
      *        "quantityInDone": 0.00,
-     *        "quantityToBuy": 0.00
+     *        "quantityToBuy": 0.00,
+     *        "quantityRequiredForProduction": 3
      *      }
      *     ]
      *  },
@@ -216,25 +218,65 @@ module.exports = {
      *
      */
     list: async function (/** @type {knex} */ db, /** @type {number} */ userId, /** @type {object} */ props) {
-        const { start, direction, limit } = props;
+        const { leftOff, direction, limit, filter } = props;
+        const ORDER = (direction === 'first' || direction === 'next') ? 'asc' : 'desc';
 
         const productIdsAsPromise = () => {
-            if (direction === 'next') {
-                return db.select('id')
-                    .from('products')
-                    .where('userId', userId)
-                    .where("id", ">", start)
-                    .whereNull("deactivated_at")
-                    .orderBy('id', 'asc')
-                    .limit(limit);
+            if (direction === 'first') {
+                if (filter.name) {
+                    return db.select('id')
+                        .from('products')
+                        .where('userId', userId)
+                        .whereNull("deactivated_at")
+                        .where('name', 'like', `${filter.name}`)
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                } else {
+                    return db.select('id')
+                        .from('products')
+                        .where('userId', userId)
+                        .whereNull("deactivated_at")
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                }
+            } else if (direction === 'next') {
+                if (filter.name) {
+                    return db.select('id')
+                        .from('products')
+                        .where('userId', userId)
+                        .where("id", ">", leftOff)
+                        .whereNull("deactivated_at")
+                        .where('name', 'like', `${filter.name}`)
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                } else {
+                    return db.select('id')
+                        .from('products')
+                        .where('userId', userId)
+                        .where("id", ">", leftOff)
+                        .whereNull("deactivated_at")
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                }
             } else if (direction === 'back') {
-                return db.select('id')
-                    .from('products')
-                    .where('userId', userId)
-                    .where("id", "<=", start)
-                    .whereNull("deactivated_at")
-                    .orderBy('id', 'desc')
-                    .limit(limit);
+                if (filter.name) {
+                    return db.select('id')
+                        .from('products')
+                        .where('userId', userId)
+                        .where("id", "<", leftOff)
+                        .whereNull("deactivated_at")
+                        .where('name', 'like', `${filter.name}`)
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                } else {
+                    return db.select('id')
+                        .from('products')
+                        .where('userId', userId)
+                        .where("id", "<", leftOff)
+                        .whereNull("deactivated_at")
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                }
             }
         };
 
@@ -275,7 +317,7 @@ module.exports = {
                     const filteredQuantity = _.filter(filteredMaterials, { id: m.id });
                     const quantity = _.head(filteredQuantity).quantity;
 
-                    return Object.assign({}, m, { quantityNeededForThisProduct: quantity });
+                    return Object.assign({}, m, { quantityRequiredForProduction: quantity });
                 }
             });
 

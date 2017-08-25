@@ -91,8 +91,9 @@ export default class MaterialModal extends Reflux.Component {
 }
 
 const options = [
-    { key: 'L', text: `${locale.material_type_L}`, value: 'L' },
-    { key: 'kg', text: `${locale.material_type_kg}`, value: 'kg' }
+    { key: 'L', text: `${locale.material_unit_L}`, value: 'L' },
+    { key: 'kg', text: `${locale.material_unit_kg}`, value: 'kg' },
+    { key: 'piece', text: `${locale.material_unit_piece}`, value: 'piece' }
 ]
 
 MaterialModal.propTypes = {

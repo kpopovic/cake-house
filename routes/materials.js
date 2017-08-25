@@ -31,7 +31,6 @@ router.put('/', async function (req, res) {
 
 router.get('/', async function (req, res) {
     try {
-        console.log("materials - getAll=" + JSON.stringify(req.query, null, 2));
         const leftOff = parseInt(req.query.leftOff); // NaN if not integer
         const filterName = req.query.filter ? req.query.filter.name : null;
 

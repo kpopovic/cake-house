@@ -31,47 +31,44 @@ router.put('/', async function (req, res) {
 
 router.get('/', async function (req, res) {
     try {
-        if (req.query.productId) {
-            const productIds = _.split(req.query.productId, ' ');
-            const result = await products.listById(req.db, req.userId, { productId: productIds });
-            const size = result.length;
+        const leftOff = parseInt(req.query.leftOff); // NaN if not integer
+        const filterName = req.query.filter ? req.query.filter.name : null;
 
-            if (size === 0) {
-                res.json({ code: 0, type: 'LIST_PRODUCT', message: 'No active products listed', data: { products: [] } });
+        const direction = (value, defaultValue) => {
+            if (value === 'first' || value === 'next' || value === 'back') {
+                return value;
             } else {
-                res.json({ code: 0, type: 'LIST_PRODUCT', message: 'Active products are listed', data: { products: result } });
+                return defaultValue;
             }
+        };
 
+        const limit = (value, defaultValue) => {
+            const maxLimit = 100; // protection limit
+            const intValue = parseInt(value);
+            if (Number.isInteger(intValue) && intValue > 0 && intValue <= maxLimit) {
+                return intValue;
+            } else {
+                return defaultValue;
+            }
+        };
+
+        const props = {
+            leftOff: leftOff,
+            direction: direction(req.query.direction, 'first'),
+            limit: limit(req.query.limit, 10),
+            filter: {
+                name: filterName
+            }
+        };
+
+        const result = await products.list(req.db, req.userId, props);
+
+        if (result.length === 0) {
+            res.json({ code: 0, type: 'LIST_PRODUCT', message: 'No active products listed', data: { products: [] } });
         } else {
-            // start and limit query params are optional
-            const intStart = parseInt(req.query.start); // NaN if not integer
-            const intLimit = parseInt(req.query.limit); // NaN if not integer
-            const direction = req.query.direction === 'back' ? 'back' : 'next';
-
-            const start = Number.isInteger(intStart) && intStart > 0 ? intStart : 0;
-            const maxLimit = 50;
-            const limit = Number.isInteger(intLimit) && (intLimit > 0 && intLimit <= maxLimit) ? intLimit : maxLimit;
-            const aLimit = limit + 1; // +1 is to see if we have next page
-
-            const props = {
-                start: start,
-                direction: direction,
-                limit: aLimit
-            };
-
-            const result = await products.list(req.db, req.userId, props);
-            const size = result.length;
-
-            if (size === 0) {
-                res.json({ code: 0, type: 'LIST_PRODUCT', message: 'No active products listed', data: { products: [] } });
-            } else if (aLimit === size) {
-                const products = _.slice(result, 0, limit);
-                const leftOff = _.last(products).id;
-                res.json({ code: 0, type: 'LIST_PRODUCT', message: 'Active products are listed', data: { products: products, leftOff: leftOff } });
-            } else {
-                res.json({ code: 0, type: 'LIST_PRODUCT', message: 'Active products are listed', data: { products: result } });
-            }
+            res.json({ code: 0, type: 'LIST_PRODUCT', message: 'Active products are listed', data: { products: result } });
         }
+
     } catch (err) {
         console.error(err);
         res.json({ code: -1, type: 'LIST_PRODUCT', message: 'Active products cant be listed' });

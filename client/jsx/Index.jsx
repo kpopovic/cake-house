@@ -10,7 +10,7 @@ import IndexActions from './../javascripts/actions/index-actions'
 import AuthStore from './../javascripts/stores/AuthStore'
 import IndexStore from './../javascripts/stores/IndexStore'
 import Material from './../jsx/material/Material'
-import ProductContainer from './../jsx/product/ProductContainer'
+import Product from './../jsx/product/Product'
 import OrderContainer from './../jsx/order/OrderContainer'
 import Reflux from 'reflux';
 
@@ -54,7 +54,7 @@ export default class Index extends Reflux.Component {
                 </div>
 
                 <div style={activeItem === MENU_PRODUCT ? {} : { display: 'none' }}>
-                    <ProductContainer />
+                    <Product />
                 </div>
 
                 <div style={activeItem === MENU_ORDER ? {} : { display: 'none' }}>
