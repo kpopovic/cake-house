@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { Button, Grid, Header, Modal, Form, Input, Divider, Search } from 'semantic-ui-react';
+import { Button, Grid, Header, Modal, Form, Input, Divider, Search, Table, Image } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
 import ProductModalActions from './../../javascripts/actions/product-modal-actions';
@@ -12,6 +12,10 @@ export default class ProductModal extends Reflux.Component {
     constructor() {
         super();
         this.store = buildStore();
+
+        ProductModalActions.save.completed.listen(() => {
+            this.props.onSave();
+        });
     }
 
     renderFilterForm(data) {
@@ -51,70 +55,66 @@ export default class ProductModal extends Reflux.Component {
         )
     }
 
-    renderInputForm() {
+    renderInputForm(materials) {
+        const renderTableBody = () => {
+            const materialList = materials.map((material, index) => {
+                return (
+                    <Table.Row key={index}>
+                        <Table.Cell>{material.name}</Table.Cell>
+                        <Table.Cell>{material.unit}</Table.Cell>
+                        <Table.Cell>{material.quantityRequiredForProduction}</Table.Cell>
+                        <Table.Cell>
+                            <Button color='red' onClick={(e, data) => { ProductModalActions.removeMaterial(material.id) }}>Remove</Button>
+                        </Table.Cell>
+                    </Table.Row>
+                )
+            });
+
+            if (materialList.length > 0) {
+                return (
+                    <Table.Body>
+                        {materialList}
+                    </Table.Body>
+                )
+            } else {
+                return (
+                    <Table.Body>
+                        <Table.Row key={1}>
+                            <Table.Cell colSpan={5}>
+                                <Image fluid src={locale.table_empty} />
+                            </Table.Cell>
+                        </Table.Row>
+                    </Table.Body>
+                )
+            }
+        } // end of renderTableBody function
+
         return (
-            <Grid columns={2}>
-                <Grid.Row>
-                    <Grid.Column>
-                        <Form>
-                            <Form.Group>
-                                <Form.Field>
-                                    <label>Mlijeko</label>
-                                    <Input type="number" label={{ basic: true, content: 'kg' }} labelPosition='right' placeholder={locale.product_table_modal_material_quantity} />
-                                </Form.Field>
-                                <Form.Field>
-                                    <label style={{ whiteSpace: 'pre' }}> </label>
-                                    <Button color='red'>Ukloni materijal</Button>
-                                </Form.Field>
-                            </Form.Group>
-                        </Form>
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Form>
-                            <Form.Group>
-                                <Form.Field>
-                                    <label>Mlijeko</label>
-                                    <Input type="number" label={{ basic: true, content: 'kg' }} labelPosition='right' placeholder={locale.product_table_modal_material_quantity} />
-                                </Form.Field>
-                                <Form.Field>
-                                    <label style={{ whiteSpace: 'pre' }}> </label>
-                                    <Button color='red'>Ukloni materijal</Button>
-                                </Form.Field>
-                            </Form.Group>
-                        </Form>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column>
-                        <Form>
-                            <Form.Group>
-                                <Form.Field>
-                                    <label>Mlijeko</label>
-                                    <Input type="number" label={{ basic: true, content: 'kg' }} labelPosition='right' placeholder={locale.product_table_modal_material_quantity} />
-                                </Form.Field>
-                                <Form.Field>
-                                    <label style={{ whiteSpace: 'pre' }}> </label>
-                                    <Button color='red'>Ukloni materijal</Button>
-                                </Form.Field>
-                            </Form.Group>
-                        </Form>
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
+            <Table basic>
+                <Table.Header>
+                    <Table.Row>
+                        <Table.HeaderCell>Name</Table.HeaderCell>
+                        <Table.HeaderCell>Unit</Table.HeaderCell>
+                        <Table.HeaderCell>Quantity</Table.HeaderCell>
+                        <Table.HeaderCell>Remove</Table.HeaderCell>
+                    </Table.Row>
+                </Table.Header>
+                {renderTableBody()}
+            </Table>
         )
     }
 
     render() {
-        const { filter, currentProduct, open } = this.state.store;
-        const headerTitle = currentProduct ? locale.product_table_modal_edit_title : locale.product_table_modal_add_title;
+        const { filter, productId, materials, open } = this.state.store;
+        const headerTitle = productId ? locale.product_table_modal_edit_title : locale.product_table_modal_add_title;
 
         return (
             <Modal dimmer='blurring' open={open} onClose={(e, data) => { ProductModalActions.resetStore() }}>
                 <Modal.Header>{headerTitle}</Modal.Header>
-                <Modal.Content>
+                <Modal.Content scrolling>
                     {this.renderFilterForm(filter)}
                     <Divider />
-                    {this.renderInputForm()}
+                    {this.renderInputForm(materials)}
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={(e, data) => { ProductModalActions.resetStore() }}>
@@ -126,10 +126,15 @@ export default class ProductModal extends Reflux.Component {
                         icon='checkmark'
                         labelPosition='right'
                         content={locale.btn_add}
-                        onClick={(e, data) => { }}
+                        onClick={(e, data) => { ProductModalActions.save() }}
                     />
                 </Modal.Actions>
             </Modal>
         )
     }
 }
+
+ProductModal.propTypes = {
+    onSave: PropTypes.func.isRequired
+};
+

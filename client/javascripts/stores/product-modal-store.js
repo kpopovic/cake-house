@@ -4,6 +4,7 @@ import Reflux from 'reflux';
 import ProductModalActions from './../actions/product-modal-actions';
 import rootUrl from './../web-root-url';
 import _ from 'lodash';
+import axios from 'axios';
 
 class ProductModalStore extends Reflux.Store {
 
@@ -13,9 +14,65 @@ class ProductModalStore extends Reflux.Store {
         this.state = { store: defaultState };
     }
 
+    onSave() {
+        const thePromise = () => {
+            const { productId, materials } = this.state.store;
+
+            const materialQuantityList = materials.map(m => {
+                return { id: m.id, quantity: m.quantityRequiredForProduction }
+            });
+
+            const data = { materials: materialQuantityList };
+
+            if (productId) {
+                return axios.put(`/v1/product?productId=${productId}`, data);
+            } else {
+                return axios.post("/v1/product", data);
+            }
+        };
+
+        const promise = thePromise();
+
+        promise.then(response => {
+            if (response.data.code === 0) {
+                this.onResetStore();
+                ProductModalActions.save.completed();
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+    }
+
+    onAddMaterial() {
+        const { selectedMaterial, materialQuantity } = this.state.store.filter;
+
+        if (selectedMaterial && materialQuantity > 0) {
+            const { materials } = this.state.store;
+            const data = _.cloneDeep(this.state.store);
+            const material = Object.assign({}, selectedMaterial, { quantityRequiredForProduction: materialQuantity });
+            data.materials = _.concat(materials, material);
+            data.filter = defaultState.filter;
+            this.setLocalState(data);
+        } else {
+            console.warn("Material filter settings are not valid");
+        }
+    }
+
+    onRemoveMaterial(id) {
+        const { materials } = this.state.store;
+        const data = _.cloneDeep(this.state.store);
+        const filteredMaterials = _.filter(materials, m => {
+            return m.id !== id;
+        });
+
+        data.materials = filteredMaterials;
+        this.setLocalState(data);
+    }
+
     onShowModal(product) {
         const data = _.cloneDeep(defaultState);
-        data.currentProduct = product;
+        data.productId = _.get(product, 'id', null);
+        data.materials = _.get(product, 'materials', []);
         data.open = true;
         this.setLocalState(data);
     }
@@ -110,7 +167,8 @@ const defaultState = {
         isSearchInProgress: false,
         limit: 10
     },
-    currentProduct: null,
+    productId: null,
+    materials: [], // merge between selectedMaterial & currentProduct.materials
     open: false
 };
 

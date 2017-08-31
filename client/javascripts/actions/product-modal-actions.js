@@ -7,9 +7,11 @@ const ProductModalActions = Reflux.createActions([
     "searchMaterial",
     "selectMaterial",
     "addMaterial",
+    "removeMaterial",
     "setMaterialQuantity",
-    "save",
     "resetStore"
 ]);
+
+ProductModalActions.save = Reflux.createAction({ asyncResult: true });
 
 export default ProductModalActions;

@@ -62,7 +62,7 @@ export default class ProductTable extends Reflux.Component {
         return (
             <div>
                 <ProductSearchFilter onSearch={filter => ProductTableActions.listFirstPage(filter)} />
-                <ProductModal />
+                <ProductModal onSave={() => ProductTableActions.listFirstPage()} />
                 <Table basic>
                     <Table.Header>
                         <Table.Row>
