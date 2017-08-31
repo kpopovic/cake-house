@@ -4,12 +4,12 @@ import React, { Component } from 'react';
 import { Button, Grid, Image, Table } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
-//import MaterialModal from './MaterialModal';
+import ProductModal from './ProductModal';
 import ProductSearchFilter from './ProductSearchFilter';
 import Pagination from './../Pagination';
-//import MaterialModalActions from './../../javascripts/actions/material-modal-actions.js';
+import ProductModalActions from './../../javascripts/actions/product-modal-actions';
 import ProductTableActions from './../../javascripts/actions/product-table-actions';
-import { buildStore as tableStore } from './../../javascripts/stores/product--table-store';
+import { buildStore as tableStore } from './../../javascripts/stores/product-table-store';
 import locale from './../../javascripts/locale';
 
 export default class ProductTable extends Reflux.Component {
@@ -24,13 +24,13 @@ export default class ProductTable extends Reflux.Component {
 
     fillTableBody(products) {
         if (Array.isArray(products) && products.length > 0) {
-            const itemList = products.map((item, index) => {
+            const productList = products.map((product, index) => {
                 return (
                     <Table.Row key={index}>
-                        <Table.Cell>{item.name}</Table.Cell>
-                        <Table.Cell>{item.materials.length}</Table.Cell>
+                        <Table.Cell>{product.name}</Table.Cell>
+                        <Table.Cell>{product.materials.length}</Table.Cell>
                         <Table.Cell>
-                            <Button onClick={(e, data) => { }}>
+                            <Button onClick={(e, data) => { ProductModalActions.showModal(product) }}>
                                 {locale.material_table_btn_edit}
                             </Button>
                         </Table.Cell>
@@ -40,7 +40,7 @@ export default class ProductTable extends Reflux.Component {
 
             return (
                 <Table.Body>
-                    {itemList}
+                    {productList}
                 </Table.Body>
             )
 
@@ -62,6 +62,7 @@ export default class ProductTable extends Reflux.Component {
         return (
             <div>
                 <ProductSearchFilter onSearch={filter => ProductTableActions.listFirstPage(filter)} />
+                <ProductModal />
                 <Table basic>
                     <Table.Header>
                         <Table.Row>
@@ -76,8 +77,11 @@ export default class ProductTable extends Reflux.Component {
                     <Table.Footer fullWidth>
                         <Table.Row>
                             <Table.HeaderCell />
-                            <Table.HeaderCell colSpan='5'>
-                                <Button floated='right' primary onClick={(e, data) => { }}>
+                            <Table.HeaderCell colSpan={5}>
+                                <Button
+                                    primary
+                                    floated='right'
+                                    onClick={(e, data) => { ProductModalActions.showModal() }}>
                                     {locale.product_table_btn_add}
                                 </Button>
                                 <Pagination

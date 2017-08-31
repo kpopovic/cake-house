@@ -29,8 +29,6 @@ const locale = new LocalizedStrings({
 
         material_table_modal_add_title: "Unos novog materijala",
         material_table_modal_edit_title: "Izmjena materijala",
-        material_table_modal_btn_add: "Potvrdi",
-        material_table_modal_btn_cancel: "Poništi",
         material_table_modal_quantityInStock: "Stanje skladišta",
         material_table_modal_quantityInStock_content: "Unesite stanje skladišta",
         material_table_modal_unit_content: "Unesite jedinicu materijala",
@@ -48,9 +46,20 @@ const locale = new LocalizedStrings({
         product_table_btn_edit: "Izmjeni",
         product_table_btn_add: "Unesi proizvod",
 
+        product_table_modal_add_title: "Unos novog proizvoda",
+        product_table_modal_edit_title: "Izmjena proizvoda",
+
+        product_table_modal_material_noResultsMessage: "Materijal nije pronađen",
+        product_table_modal_material_quantity: "Količina materijala",
+        product_table_modal_btn_add: "Dodaj materijal",
+
         // pagination
         pagination_btn_next: "Naprijed",
-        pagination_btn_previous: "Nazad"
+        pagination_btn_previous: "Nazad",
+
+        btn_add: "Potvrdi",
+        btn_cancel: "Poništi",
+
     }
 });
 

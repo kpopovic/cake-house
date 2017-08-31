@@ -74,14 +74,14 @@ export default class MaterialModal extends Reflux.Component {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={(e, data) => MaterialModalActions.resetStore()}>
-                        {locale.material_table_modal_btn_cancel}
+                        {locale.btn_cancel}
                     </Button>
                     <Button
                         positive
                         disabled={this.isDisableSaveButton()}
                         icon='checkmark'
                         labelPosition='right'
-                        content={locale.material_table_modal_btn_add}
+                        content={locale.btn_add}
                         onClick={(e, data) => MaterialModalActions.createOrUpdate()}
                     />
                 </Modal.Actions>
