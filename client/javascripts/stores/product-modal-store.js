@@ -16,13 +16,13 @@ class ProductModalStore extends Reflux.Store {
 
     onSave() {
         const thePromise = () => {
-            const { productId, materials } = this.state.store;
+            const { productId, productName, materials } = this.state.store;
 
             const materialQuantityList = materials.map(m => {
                 return { id: m.id, quantity: m.quantityRequiredForProduction }
             });
 
-            const data = { materials: materialQuantityList };
+            const data = { name: _.trim(productName), materials: materialQuantityList };
 
             if (productId) {
                 return axios.put(`/v1/product?productId=${productId}`, data);
@@ -31,9 +31,7 @@ class ProductModalStore extends Reflux.Store {
             }
         };
 
-        const promise = thePromise();
-
-        promise.then(response => {
+        thePromise().then(response => {
             if (response.data.code === 0) {
                 this.onResetStore();
                 ProductModalActions.save.completed();
@@ -72,6 +70,7 @@ class ProductModalStore extends Reflux.Store {
     onShowModal(product) {
         const data = _.cloneDeep(defaultState);
         data.productId = _.get(product, 'id', null);
+        data.productName = _.get(product, 'name', '');
         data.materials = _.get(product, 'materials', []);
         data.open = true;
         this.setLocalState(data);
@@ -84,29 +83,19 @@ class ProductModalStore extends Reflux.Store {
         }
 
         const { limit } = this.state.store.filter;
-        const url = rootUrl + `/v1/material?direction=first&limit=${limit}&filter[name]=${name}`;
-
         this.searchInProgressOn();
+        const promise = axios.get(`/v1/material?direction=first&limit=${limit}&filter[name]=${name}`);
 
-        const promise = $.ajax({
-            url: url,
-            type: 'GET',
-            crossDomain: false,
-            dataType: 'json'
-        });
-
-        promise.done(response => {
-            if (response.code === 0) {
+        promise.then(response => {
+            if (response.data.code === 0) {
                 const data = _.cloneDeep(this.state.store);
-                data.filter.searchedMaterials = response.data.materials;
-                data.filter.name = name;
+                data.filter.searchedMaterials = response.data.data.materials;
+                data.filter.materialName = name;
                 data.filter.isSearchInProgress = false;
                 this.setLocalState(data);
             }
-        });
-
-        promise.fail(error => {
-            console.error(error);
+        }).catch(error => {
+            console.log(error);
         });
     }
 
@@ -115,7 +104,7 @@ class ProductModalStore extends Reflux.Store {
             const materials = _.filter(this.state.store.filter.searchedMaterials, { id: id });
             const data = _.cloneDeep(this.state.store);
             data.filter.selectedMaterial = materials[0];
-            data.filter.name = materials[0].name;
+            data.filter.materialName = materials[0].name;
             data.filter.isSearchInProgress = false;
             this.setLocalState(data);
         } else {
@@ -152,6 +141,13 @@ class ProductModalStore extends Reflux.Store {
         this.setLocalState(data);
     }
 
+    onSetProductName(name) {
+        const data = _.cloneDeep(this.state.store);
+        const isEmpty = _.isString(name) && _.trim(name).length === 0;
+        data.productName = isEmpty ? '' : name;
+        this.setLocalState(data);
+    }
+
     setLocalState(data) {
         const newData = _.cloneDeep(data);
         this.setState({ store: newData });
@@ -160,7 +156,7 @@ class ProductModalStore extends Reflux.Store {
 
 const defaultState = {
     filter: {
-        name: '',
+        materialName: '',
         searchedMaterials: [],
         selectedMaterial: null,
         materialQuantity: '',
@@ -168,6 +164,7 @@ const defaultState = {
         limit: 10
     },
     productId: null,
+    productName: '',
     materials: [], // merge between selectedMaterial & currentProduct.materials
     open: false
 };
