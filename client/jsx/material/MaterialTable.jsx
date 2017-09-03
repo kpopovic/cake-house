@@ -109,5 +109,5 @@ MaterialTable.propTypes = {
 };
 
 MaterialTable.defaultProps = {
-    pageSize: 3
+    pageSize: 10
 };
