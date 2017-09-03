@@ -55,7 +55,7 @@ class MaterialTableStore extends Reflux.Store {
                         {},
                         this.state.mtStore,
                         {
-                            list: _.sortBy(compactMaterials, ['name']),
+                            list: _.sortBy(compactMaterials, [function (o) { return o.name.toUpperCase(); }]),
                             minLeftOff: minLeftOff,
                             maxLeftOff: maxLeftOff,
                             currentPage: 1,
@@ -120,7 +120,7 @@ class MaterialTableStore extends Reflux.Store {
                         {},
                         this.state.mtStore,
                         {
-                            list: _.sortBy(compactMaterials, ['name']),
+                            list: _.sortBy(compactMaterials, [function (o) { return o.name.toUpperCase(); }]),
                             minLeftOff: minLeftOff,
                             maxLeftOff: maxLeftOff,
                             currentPage: nextCurrentPage,
@@ -184,7 +184,7 @@ class MaterialTableStore extends Reflux.Store {
                         {},
                         this.state.mtStore,
                         {
-                            list: _.sortBy(compactMaterials, ['name']),
+                            list: _.sortBy(compactMaterials, [function (o) { return o.name.toUpperCase(); }]),
                             minLeftOff: minLeftOff,
                             maxLeftOff: maxLeftOff,
                             currentPage: currentPage - 1,
