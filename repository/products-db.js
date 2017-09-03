@@ -146,8 +146,13 @@ module.exports = {
             .orderBy('p.id', 'asc')
             .orderBy('p.name', 'asc');
 
+        if (!Array.isArray(productsResult) || productsResult.length === 0) {
+            return [];
+        }
+
         const materialIds = productsResult.map(p => p.mId);
-        const materialsResult = await materials.listById(db, userId, { materialId: materialIds });
+        const materialIdsUnique = _.uniq(materialIds);
+        const materialsResult = await materials.listById(db, userId, { materialId: materialIdsUnique });
 
         const resultGrouped = _.groupBy(productsResult, function (key) {
             return key.name;
@@ -299,7 +304,8 @@ module.exports = {
             .orderBy('p.name', 'asc');
 
         const materialIds = productsResult.map(p => p.mId);
-        const materialsResult = await materials.listById(db, userId, { materialId: materialIds });
+        const materialIdsUnique = _.uniq(materialIds);
+        const materialsResult = await materials.listById(db, userId, { materialId: materialIdsUnique });
         const mpResult = await materials_products.list(db, { productId: productIds });
 
         const resultGrouped = _.groupBy(productsResult, function (key) {
