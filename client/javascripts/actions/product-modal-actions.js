@@ -9,6 +9,7 @@ const ProductModalActions = Reflux.createActions([
     "addMaterial",
     "removeMaterial",
     "setMaterialQuantity",
+    "setProductName",
     "resetStore"
 ]);
 
