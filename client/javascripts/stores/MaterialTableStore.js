@@ -33,7 +33,8 @@ class MaterialTableStore extends Reflux.Store {
 
         const thePromise = () => {
             if (thefilter.name && thefilter.name.length > 0) {
-                return axios.get(`/v1/material?direction=first&filter[name]=${thefilter.name}&limit=${aLimit}`);
+                const allNames = '%' + thefilter.name + '%';
+                return axios.get(`/v1/material?direction=first&filter[name]=${allNames}&limit=${aLimit}`);
             } else {
                 return axios.get(`/v1/material?direction=first&limit=${aLimit}`);
             }
@@ -96,7 +97,8 @@ class MaterialTableStore extends Reflux.Store {
 
         const thePromise = () => {
             if (filter.name && filter.name.length > 0) {
-                return axios.get(`/v1/material?direction=next&filter[name]=${filter.name}&leftOff=${leftOff}&limit=${aLimit}`);
+                const allNames = '%' + filter.name + '%';
+                return axios.get(`/v1/material?direction=next&filter[name]=${allNames}&leftOff=${leftOff}&limit=${aLimit}`);
             } else {
                 return axios.get(`/v1/material?direction=next&leftOff=${leftOff}&limit=${aLimit}`);
             }
@@ -158,7 +160,8 @@ class MaterialTableStore extends Reflux.Store {
 
         const thePromise = () => {
             if (filter.name && filter.name.length > 0) {
-                return axios.get(`/v1/material?direction=back&filter[name]=${filter.name}&leftOff=${leftOff}&limit=${aLimit}`);
+                const allNames = '%' + filter.name + '%';
+                return axios.get(`/v1/material?direction=back&filter[name]=${allNames}&leftOff=${leftOff}&limit=${aLimit}`);
             } else {
                 return axios.get(`/v1/material?direction=back&leftOff=${leftOff}&limit=${aLimit}`);
             }

@@ -83,7 +83,9 @@ class ProductModalStore extends Reflux.Store {
 
         const { limit } = this.state.store.filter;
         this.searchInProgressOn();
-        const promise = axios.get(`/v1/material?direction=first&limit=${limit}&filter[name]=${name}`);
+
+        const allNames = '%' + name + '%';
+        const promise = axios.get(`/v1/material?direction=first&limit=${limit}&filter[name]=${allNames}`);
 
         promise.then(response => {
             if (response.data.code === 0) {
