@@ -2,7 +2,6 @@
 
 import Reflux from 'reflux';
 import ProductTableActions from './../actions/product-table-actions';
-import rootUrl from './../web-root-url';
 import _ from 'lodash';
 import axios from 'axios';
 
@@ -34,7 +33,7 @@ class ProductTableStore extends Reflux.Store {
 
         const thePromise = () => {
             if (thefilter.name && thefilter.name.length > 0) {
-                return axios.get(`/v1/product?direction=first&filter[name]=${filter.name}&limit=${aLimit}`);
+                return axios.get(`/v1/product?direction=first&filter[name]=${thefilter.name}&limit=${aLimit}`);
             } else {
                 return axios.get(`/v1/product?direction=first&limit=${aLimit}`);
             }
@@ -96,10 +95,10 @@ class ProductTableStore extends Reflux.Store {
         const nextCurrentPage = currentPage + 1;
 
         const thePromise = () => {
-            if (leftOff > 0) {
-                return axios.get(`/v1/product?direction=next&leftOff=${leftOff}&limit=${aLimit}`);
+            if (filter.name && filter.name.length > 0) {
+                return axios.get(`/v1/product?direction=next&filter[name]=${filter.name}&leftOff=${leftOff}&limit=${aLimit}`);
             } else {
-                return axios.get(`/v1/product?direction=next&limit=${aLimit}`);
+                return axios.get(`/v1/product?direction=next&leftOff=${leftOff}&limit=${aLimit}`);
             }
         }
 
@@ -158,10 +157,10 @@ class ProductTableStore extends Reflux.Store {
         const currentPage = this.state.mpStore.currentPage;
 
         const thePromise = () => {
-            if (leftOff > 0) {
-                return axios.get(`/v1/product?direction=back&leftOff=${leftOff}&limit=${aLimit}`);
+            if (filter.name && filter.name.length > 0) {
+                return axios.get(`/v1/product?direction=back&filter[name]=${filter.name}&leftOff=${leftOff}&limit=${aLimit}`);
             } else {
-                return axios.get(`/v1/product?direction=back&limit=${aLimit}`);
+                return axios.get(`/v1/product?direction=back&leftOff=${leftOff}&limit=${aLimit}`);
             }
         }
 
@@ -176,6 +175,10 @@ class ProductTableStore extends Reflux.Store {
                     const compactProducts = hasPrevious ? _.slice(products, 0, limit) : products;
                     const minLeftOff = _.minBy(compactProducts, function (o) { return o.id }).id;
                     const maxLeftOff = _.maxBy(compactProducts, function (o) { return o.id }).id;
+
+                    console.log("head=" + JSON.stringify(_.head(compactProducts), null, 2));
+                    console.log("last1=" + JSON.stringify(_.last(products), null, 2));
+                    console.log("last2=" + JSON.stringify(_.last(compactProducts), null, 2));
 
                     const newState = Object.assign(
                         {},

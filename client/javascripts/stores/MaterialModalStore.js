@@ -2,8 +2,8 @@
 
 import Reflux from 'reflux';
 import MaterialModalActions from './../actions/material-modal-actions';
-import rootUrl from './../web-root-url'
 import _ from 'lodash';
+import axios from 'axios';
 
 export default class MaterialModalStore extends Reflux.Store {
     constructor() {
@@ -17,37 +17,21 @@ export default class MaterialModalStore extends Reflux.Store {
         const thePromise = () => {
             const data = _.pick(this.state.mStore, ['name', 'unit', 'quantityInStock']);
             if (id) {
-                return $.ajax({
-                    url: rootUrl + `/v1/material?materialId=${id}`,
-                    type: 'PUT',
-                    crossDomain: false,
-                    dataType: 'json',
-                    data: data
-                });
+                return axios.put(`/v1/material?materialId=${id}`, data);
             } else {
-                return $.ajax({
-                    url: rootUrl + "/v1/material",
-                    type: 'POST',
-                    crossDomain: false,
-                    dataType: 'json',
-                    data: data
-                });
+                return axios.post('/v1/material', data);
             }
         }
 
-        const promise = thePromise();
-
-        promise.done(data => {
-            if (data.code === 0) {
+        thePromise().then(response => {
+            if (response.data.code === 0) {
                 this.onResetStore();
                 MaterialModalActions.createOrUpdate.completed({ action: id ? 'update' : 'create' });
             } else {
-                console.error(JSON.stringify(data, null, 2));
+                console.error(JSON.stringify(response.data, null, 2));
                 MaterialModalActions.createOrUpdate.failed();
             }
-        });
-
-        promise.fail(error => {
+        }).catch(error => {
             console.error(error);
             MaterialModalActions.createOrUpdate.failed(error);
         });

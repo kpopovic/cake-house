@@ -2,8 +2,8 @@
 
 import Reflux from 'reflux';
 import MaterialTableActions from './../actions/material-table-actions';
-import rootUrl from './../web-root-url';
-const _ = require('lodash');
+import _ from 'lodash';
+import axios from 'axios';
 
 class MaterialTableStore extends Reflux.Store {
 
@@ -31,17 +31,17 @@ class MaterialTableStore extends Reflux.Store {
         const aLimit = limit + 1 // +1 is to see if we have next page
         const thefilter = queryFilter ? queryFilter : filter;
 
-        const defaultUrl = rootUrl + `/v1/material?direction=first&limit=${aLimit}`;
-        const promise = $.ajax({
-            url: this.urlWithQueryParams(thefilter, defaultUrl),
-            type: 'GET',
-            crossDomain: false,
-            dataType: 'json'
-        });
+        const thePromise = () => {
+            if (thefilter.name && thefilter.name.length > 0) {
+                return axios.get(`/v1/material?direction=first&filter[name]=${thefilter.name}&limit=${aLimit}`);
+            } else {
+                return axios.get(`/v1/material?direction=first&limit=${aLimit}`);
+            }
+        }
 
-        promise.done(response => {
-            if (response.code === 0) {
-                const materials = response.data.materials;
+        thePromise().then(response => {
+            if (response.data.code === 0) {
+                const materials = response.data.data.materials;
                 const size = materials.length;
 
                 if (size > 0) {
@@ -82,10 +82,8 @@ class MaterialTableStore extends Reflux.Store {
                     this.setState({ mtStore: newState });
                 }
             }
-        });
-
-        promise.fail(error => {
-            console.error(error);
+        }).catch(error => {
+            console.log(error);
         });
     }
 
@@ -96,17 +94,17 @@ class MaterialTableStore extends Reflux.Store {
         const currentPage = this.state.mtStore.currentPage;
         const nextCurrentPage = currentPage + 1;
 
-        const defaultUrl = rootUrl + `/v1/material?direction=next&leftOff=${leftOff}&limit=${aLimit}`;
-        const promise = $.ajax({
-            url: this.urlWithQueryParams(filter, defaultUrl),
-            type: 'GET',
-            crossDomain: false,
-            dataType: 'json'
-        });
+        const thePromise = () => {
+            if (filter.name && filter.name.length > 0) {
+                return axios.get(`/v1/material?direction=next&filter[name]=${filter.name}&leftOff=${leftOff}&limit=${aLimit}`);
+            } else {
+                return axios.get(`/v1/material?direction=next&leftOff=${leftOff}&limit=${aLimit}`);
+            }
+        }
 
-        promise.done(response => {
-            if (response.code === 0) {
-                const materials = response.data.materials;
+        thePromise().then(response => {
+            if (response.data.code === 0) {
+                const materials = response.data.data.materials;
                 const size = materials.length;
 
                 if (size > 0) {
@@ -147,10 +145,8 @@ class MaterialTableStore extends Reflux.Store {
                     this.setState({ mtStore: newState });
                 }
             }
-        });
-
-        promise.fail(error => {
-            console.error(error);
+        }).catch(error => {
+            console.log(error);
         });
     }
 
@@ -160,17 +156,17 @@ class MaterialTableStore extends Reflux.Store {
         const leftOff = this.state.mtStore.minLeftOff;
         const currentPage = this.state.mtStore.currentPage;
 
-        const defaultUrl = `/v1/material?direction=back&leftOff=${leftOff}&limit=${aLimit}`;
-        const promise = $.ajax({
-            url: this.urlWithQueryParams(filter, defaultUrl),
-            type: 'GET',
-            crossDomain: false,
-            dataType: 'json'
-        });
+        const thePromise = () => {
+            if (filter.name && filter.name.length > 0) {
+                return axios.get(`/v1/material?direction=back&filter[name]=${filter.name}&leftOff=${leftOff}&limit=${aLimit}`);
+            } else {
+                return axios.get(`/v1/material?direction=back&leftOff=${leftOff}&limit=${aLimit}`);
+            }
+        }
 
-        promise.done(response => {
-            if (response.code === 0) {
-                const materials = response.data.materials;
+        thePromise().then(response => {
+            if (response.data.code === 0) {
+                const materials = response.data.data.materials;
                 const size = materials.length;
 
                 if (size > 0) {
@@ -211,17 +207,9 @@ class MaterialTableStore extends Reflux.Store {
                     this.setState({ mtStore: newState });
                 }
             }
+        }).catch(error => {
+            console.log(error);
         });
-
-        promise.fail(error => {
-            console.error(error);
-        });
-    }
-
-    urlWithQueryParams(filter, defaultUrl) {
-        if (!filter || !filter.name) return defaultUrl;
-
-        return defaultUrl + `&filter[name]=${filter.name}`;
     }
 }
 

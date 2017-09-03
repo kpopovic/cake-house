@@ -2,8 +2,7 @@
 
 import Reflux from 'reflux';
 import AuthActions from './../actions/auth-actions';
-import rootUrl from './../web-root-url'
-import _ from 'lodash';
+import axios from 'axios';
 
 export default class AuthStore extends Reflux.Store {
     constructor(userAuthenticated) {
@@ -23,42 +22,30 @@ export default class AuthStore extends Reflux.Store {
     }
 
     onLoginUser() {
-        const field = _.pick(this.state.lStore, ['username', 'password']);
-        const promise = $.ajax({
-            url: rootUrl + "/v1/user",
-            type: 'GET',
-            crossDomain: false,
-            dataType: 'json',
-            headers: {
-                "Authorization": "Basic " + btoa(field.username + ":" + field.password)
-            }
-        });
+        const { username, password } = this.state.lStore;
+        const basicAuth = "Basic " + btoa(field.username + ":" + field.password);
 
-        promise.done(data => {
+        const promise = axios.get(
+            "/v1/user",
+            { headers: { Authorization: basicAuth } }
+        );
+
+        promise.then(data => {
             const newData = Object.assign({}, this.state.lStore, { userAuthenticated: true });
             this.setState({ lStore: newData });
-        });
-
-        promise.fail(error => {
-            console.error(error);
+        }).catch(error => {
+            console.log(error);
         });
     }
 
     onLogoutUser() {
-        const promise = $.ajax({
-            url: rootUrl + "/v1/user/logout",
-            type: 'GET',
-            crossDomain: false,
-            dataType: 'json'
-        });
+        const promise = axios.get("/v1/user/logout");
 
-        promise.done(data => {
+        promise.then(data => {
             const newData = Object.assign({}, this.state.lStore, { userAuthenticated: false });
             this.setState({ lStore: newData });
-        });
-
-        promise.fail(error => {
-            console.error(error);
+        }).catch(error => {
+            console.log(error);
         });
     }
 

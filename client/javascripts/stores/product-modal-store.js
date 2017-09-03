@@ -2,7 +2,6 @@
 
 import Reflux from 'reflux';
 import ProductModalActions from './../actions/product-modal-actions';
-import rootUrl from './../web-root-url';
 import _ from 'lodash';
 import axios from 'axios';
 
