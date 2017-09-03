@@ -176,10 +176,6 @@ class ProductTableStore extends Reflux.Store {
                     const minLeftOff = _.minBy(compactProducts, function (o) { return o.id }).id;
                     const maxLeftOff = _.maxBy(compactProducts, function (o) { return o.id }).id;
 
-                    console.log("head=" + JSON.stringify(_.head(compactProducts), null, 2));
-                    console.log("last1=" + JSON.stringify(_.last(products), null, 2));
-                    console.log("last2=" + JSON.stringify(_.last(compactProducts), null, 2));
-
                     const newState = Object.assign(
                         {},
                         this.state.mpStore,
