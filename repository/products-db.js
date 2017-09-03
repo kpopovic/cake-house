@@ -300,8 +300,7 @@ module.exports = {
             .innerJoin('materials_products AS mp', 'mp.productId', '=', 'p.id')
             .innerJoin('materials AS m', 'm.id', '=', 'mp.materialId')
             .whereIn("p.id", productIds)
-            .orderBy('p.id', 'asc')
-            .orderBy('p.name', 'asc');
+            .orderBy('p.id', ORDER);
 
         const materialIds = productsResult.map(p => p.mId);
         const materialIdsUnique = _.uniq(materialIds);
