@@ -23,7 +23,7 @@ export default class AuthStore extends Reflux.Store {
 
     onLoginUser() {
         const { username, password } = this.state.lStore;
-        const basicAuth = "Basic " + btoa(field.username + ":" + field.password);
+        const basicAuth = "Basic " + btoa(username + ":" + password);
 
         const promise = axios.get(
             "/v1/user",
