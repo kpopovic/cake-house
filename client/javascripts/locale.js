@@ -21,6 +21,7 @@ const locale = new LocalizedStrings({
         material_table_search: "Pretraga materijala",
         material_table_header_name: "Naziv",
         material_table_header_unit: "Jedinica",
+        material_table_header_quantity: "Količina",
         material_table_header_quantityInStock: "Stanje skladišta",
         material_table_header_quantityToBuy: "Za kupiti",
         material_table_header_edit: "Izmjena",
@@ -51,6 +52,12 @@ const locale = new LocalizedStrings({
 
         product_table_modal_material_noResultsMessage: "Materijal nije pronađen",
         product_table_modal_material_quantity: "Količina materijala",
+        product_table_modal_material_quantity_placeholder: "Unesite količinu za proizvodnju",
+
+        product_table_modal_productName: "Naziv proizvoda",
+        product_table_modal_productName_placeholder: "Unesite naziv proizvoda",
+        product_table_modal_material_search: "Pretraga materijala",
+        product_table_modal_material_search_placeholder: "Unesite naziv materijala",
         product_table_modal_btn_add: "Dodaj materijal",
 
         // pagination
