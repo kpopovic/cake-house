@@ -3,7 +3,8 @@
 import Reflux from 'reflux';
 import ProductTableActions from './../actions/product-table-actions';
 import rootUrl from './../web-root-url';
-const _ = require('lodash');
+import _ from 'lodash';
+import axios from 'axios';
 
 class ProductTableStore extends Reflux.Store {
 
@@ -31,17 +32,17 @@ class ProductTableStore extends Reflux.Store {
         const aLimit = limit + 1 // +1 is to see if we have next page
         const thefilter = queryFilter ? queryFilter : filter;
 
-        const defaultUrl = rootUrl + `/v1/product?direction=first&limit=${aLimit}`;
-        const promise = $.ajax({
-            url: this.urlWithQueryParams(thefilter, defaultUrl),
-            type: 'GET',
-            crossDomain: false,
-            dataType: 'json'
-        });
+        const thePromise = () => {
+            if (thefilter.name && thefilter.name.length > 0) {
+                return axios.get(`/v1/product?direction=first&filter[name]=${filter.name}&limit=${aLimit}`);
+            } else {
+                return axios.get(`/v1/product?direction=first&limit=${aLimit}`);
+            }
+        }
 
-        promise.done(response => {
-            if (response.code === 0) {
-                const products = response.data.products;
+        thePromise().then(response => {
+            if (response.data.code === 0) {
+                const products = response.data.data.products;
                 const size = products.length;
 
                 if (size > 0) {
@@ -55,7 +56,7 @@ class ProductTableStore extends Reflux.Store {
                         {},
                         this.state.mpStore,
                         {
-                            list: _.sortBy(compactProducts, ['name']),
+                            list: _.sortBy(compactProducts, [function (o) { return o.name.toUpperCase(); }]),
                             minLeftOff: minLeftOff,
                             maxLeftOff: maxLeftOff,
                             currentPage: 1,
@@ -82,10 +83,8 @@ class ProductTableStore extends Reflux.Store {
                     this.setState({ mpStore: newState });
                 }
             }
-        });
-
-        promise.fail(error => {
-            console.error(error);
+        }).catch(error => {
+            console.log(error);
         });
     }
 
@@ -96,17 +95,17 @@ class ProductTableStore extends Reflux.Store {
         const currentPage = this.state.mpStore.currentPage;
         const nextCurrentPage = currentPage + 1;
 
-        const defaultUrl = rootUrl + `/v1/product?direction=next&leftOff=${leftOff}&limit=${aLimit}`;
-        const promise = $.ajax({
-            url: this.urlWithQueryParams(filter, defaultUrl),
-            type: 'GET',
-            crossDomain: false,
-            dataType: 'json'
-        });
+        const thePromise = () => {
+            if (leftOff > 0) {
+                return axios.get(`/v1/product?direction=next&leftOff=${leftOff}&limit=${aLimit}`);
+            } else {
+                return axios.get(`/v1/product?direction=next&limit=${aLimit}`);
+            }
+        }
 
-        promise.done(response => {
-            if (response.code === 0) {
-                const products = response.data.products;
+        thePromise().then(response => {
+            if (response.data.code === 0) {
+                const products = response.data.data.products;
                 const size = products.length;
 
                 if (size > 0) {
@@ -120,7 +119,7 @@ class ProductTableStore extends Reflux.Store {
                         {},
                         this.state.mpStore,
                         {
-                            list: _.sortBy(compactProducts, ['name']),
+                            list: _.sortBy(compactProducts, [function (o) { return o.name.toUpperCase(); }]),
                             minLeftOff: minLeftOff,
                             maxLeftOff: maxLeftOff,
                             currentPage: nextCurrentPage,
@@ -147,10 +146,8 @@ class ProductTableStore extends Reflux.Store {
                     this.setState({ mpStore: newState });
                 }
             }
-        });
-
-        promise.fail(error => {
-            console.error(error);
+        }).catch(error => {
+            console.log(error);
         });
     }
 
@@ -160,17 +157,17 @@ class ProductTableStore extends Reflux.Store {
         const leftOff = this.state.mpStore.minLeftOff;
         const currentPage = this.state.mpStore.currentPage;
 
-        const defaultUrl = `/v1/product?direction=back&leftOff=${leftOff}&limit=${aLimit}`;
-        const promise = $.ajax({
-            url: this.urlWithQueryParams(filter, defaultUrl),
-            type: 'GET',
-            crossDomain: false,
-            dataType: 'json'
-        });
+        const thePromise = () => {
+            if (leftOff > 0) {
+                return axios.get(`/v1/product?direction=back&leftOff=${leftOff}&limit=${aLimit}`);
+            } else {
+                return axios.get(`/v1/product?direction=back&limit=${aLimit}`);
+            }
+        }
 
-        promise.done(response => {
-            if (response.code === 0) {
-                const products = response.data.products;
+        thePromise().then(response => {
+            if (response.data.code === 0) {
+                const products = response.data.data.products;
                 const size = products.length;
 
                 if (size > 0) {
@@ -184,7 +181,7 @@ class ProductTableStore extends Reflux.Store {
                         {},
                         this.state.mpStore,
                         {
-                            list: _.sortBy(compactProducts, ['name']),
+                            list: _.sortBy(compactProducts, [function (o) { return o.name.toUpperCase(); }]),
                             minLeftOff: minLeftOff,
                             maxLeftOff: maxLeftOff,
                             currentPage: currentPage - 1,
@@ -211,17 +208,9 @@ class ProductTableStore extends Reflux.Store {
                     this.setState({ mpStore: newState });
                 }
             }
+        }).catch(error => {
+            console.log(error);
         });
-
-        promise.fail(error => {
-            console.error(error);
-        });
-    }
-
-    urlWithQueryParams(filter, defaultUrl) {
-        if (!filter || !filter.name) return defaultUrl;
-
-        return defaultUrl + `&filter[name]=${filter.name}`;
     }
 }
 
