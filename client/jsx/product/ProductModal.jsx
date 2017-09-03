@@ -18,8 +18,23 @@ export default class ProductModal extends Reflux.Component {
         });
     }
 
+    renderProductName(name) {
+        return (
+            <Form>
+                <Form.Group>
+                    <Form.Input
+                        label={locale.product_table_modal_productName}
+                        placeholder={locale.product_table_modal_productName_placeholder}
+                        value={name}
+                        onChange={(e, { value }) => ProductModalActions.setProductName(value)}
+                    />
+                </Form.Group>
+            </Form>
+        )
+    }
+
     renderFilterForm(data) {
-        const { name, searchedMaterials, selectedMaterial, materialQuantity, isSearchInProgress } = data;
+        const { materialName, searchedMaterials, selectedMaterial, materialQuantity, isSearchInProgress } = data;
         const disableButton = !(selectedMaterial && materialQuantity && materialQuantity > 0);
 
         const results = searchedMaterials.map(m => {
@@ -30,26 +45,32 @@ export default class ProductModal extends Reflux.Component {
             <Form>
                 <Form.Group widths='equal'>
                     <Form.Field
+                        label={locale.product_table_modal_material_search}
+                        placeholder={locale.product_table_modal_material_search_placeholder}
                         control={Search}
                         loading={isSearchInProgress}
                         results={results}
-                        value={name}
+                        value={materialName}
                         noResultsMessage={locale.product_table_modal_material_noResultsMessage}
                         onResultSelect={(e, { result }) => ProductModalActions.selectMaterial(result.id)}
                         onSearchChange={(e, { value }) => ProductModalActions.searchMaterial(value)}
                     />
                     <Form.Input
-                        placeholder={locale.product_table_modal_material_quantity}
+                        label={locale.product_table_modal_material_quantity}
+                        placeholder={locale.product_table_modal_material_quantity_placeholder}
                         type='number'
                         value={materialQuantity}
                         onChange={(e, { value }) => ProductModalActions.setMaterialQuantity(value)}
                     />
-                    <Form.Button
-                        disabled={disableButton}
-                        primary
-                        onClick={(e, data) => { ProductModalActions.addMaterial(selectedMaterial.id, materialQuantity) }}>
-                        {locale.product_table_modal_btn_add}
-                    </Form.Button>
+                    <Form.Field>
+                        <label style={{ whiteSpace: 'pre' }}> </label>
+                        <Button
+                            primary
+                            disabled={disableButton}
+                            onClick={(e, data) => { ProductModalActions.addMaterial(selectedMaterial.id, materialQuantity) }}>
+                            {locale.product_table_modal_btn_add}
+                        </Button>
+                    </Form.Field>
                 </Form.Group>
             </Form>
         )
@@ -61,7 +82,7 @@ export default class ProductModal extends Reflux.Component {
                 return (
                     <Table.Row key={index}>
                         <Table.Cell>{material.name}</Table.Cell>
-                        <Table.Cell>{material.unit}</Table.Cell>
+                        <Table.Cell>{locale[`material_unit_${material.unit}`]}</Table.Cell>
                         <Table.Cell>{material.quantityRequiredForProduction}</Table.Cell>
                         <Table.Cell>
                             <Button color='red' onClick={(e, data) => { ProductModalActions.removeMaterial(material.id) }}>Remove</Button>
@@ -93,10 +114,10 @@ export default class ProductModal extends Reflux.Component {
             <Table basic>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell>Name</Table.HeaderCell>
-                        <Table.HeaderCell>Unit</Table.HeaderCell>
-                        <Table.HeaderCell>Quantity</Table.HeaderCell>
-                        <Table.HeaderCell>Remove</Table.HeaderCell>
+                        <Table.HeaderCell>{locale.material_table_header_name}</Table.HeaderCell>
+                        <Table.HeaderCell>{locale.material_table_header_unit}</Table.HeaderCell>
+                        <Table.HeaderCell>{locale.material_table_header_quantity}</Table.HeaderCell>
+                        <Table.HeaderCell>{locale.material_table_header_edit}</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
                 {renderTableBody()}
@@ -105,13 +126,15 @@ export default class ProductModal extends Reflux.Component {
     }
 
     render() {
-        const { filter, productId, materials, open } = this.state.store;
+        const { filter, productId, productName, materials, open } = this.state.store;
+        const disableSaveBtn = materials.length === 0 || productName.length === 0;
         const headerTitle = productId ? locale.product_table_modal_edit_title : locale.product_table_modal_add_title;
 
         return (
             <Modal dimmer='blurring' open={open} onClose={(e, data) => { ProductModalActions.resetStore() }}>
                 <Modal.Header>{headerTitle}</Modal.Header>
                 <Modal.Content scrolling>
+                    {this.renderProductName(productName)}
                     {this.renderFilterForm(filter)}
                     <Divider />
                     {this.renderInputForm(materials)}
@@ -122,7 +145,7 @@ export default class ProductModal extends Reflux.Component {
                     </Button>
                     <Button
                         positive
-                        //disabled={this.isDisableSaveButton()}
+                        disabled={disableSaveBtn}
                         icon='checkmark'
                         labelPosition='right'
                         content={locale.btn_add}
