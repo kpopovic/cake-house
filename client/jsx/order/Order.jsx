@@ -2,11 +2,11 @@
 
 import React, { Component } from 'react';
 import { Grid } from 'semantic-ui-react';
-import ProductTable from './ProductTable';
+import OrderTable from './OrderTable';
 
-export default class Product extends React.Component {
-    constructor() {
-        super();
+export default class Order extends React.Component {
+    constructor(props) {
+        super(props);
     }
 
     render() {
@@ -14,8 +14,8 @@ export default class Product extends React.Component {
             <Grid columns='equal'>
                 <Grid.Column>
                 </Grid.Column>
-                <Grid.Column width={5}>
-                    <ProductTable />
+                <Grid.Column width={10}>
+                    <OrderTable />
                 </Grid.Column>
                 <Grid.Column>
                 </Grid.Column>

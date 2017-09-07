@@ -231,25 +231,65 @@ module.exports = {
     *
     */
     list: async function (/** @type {knex} */ db, /** @type {number} */ userId, /** @type {object} */ props) {
-        const { start, direction, limit } = props;
+        const { leftOff, direction, limit, filter } = props;
+        const ORDER = (direction === 'first' || direction === 'next') ? 'asc' : 'desc';
 
         const orderIdsAsPromise = () => {
-            if (direction === 'next') {
-                return db.select('id')
-                    .from('orders')
-                    .where('userId', userId)
-                    .where("id", ">", start)
-                    .whereNull("deactivated_at")
-                    .orderBy('id', 'asc')
-                    .limit(limit);
+            if (direction === 'first') {
+                if (filter.name) {
+                    return db.select('id')
+                        .from('orders')
+                        .where('userId', userId)
+                        .whereNull("deactivated_at")
+                        .where('name', 'like', `${filter.name}`)
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                } else {
+                    return db.select('id')
+                        .from('orders')
+                        .where('userId', userId)
+                        .whereNull("deactivated_at")
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                }
+            } else if (direction === 'next') {
+                if (filter.name) {
+                    return db.select('id')
+                        .from('orders')
+                        .where('userId', userId)
+                        .where("id", ">", leftOff)
+                        .whereNull("deactivated_at")
+                        .where('name', 'like', `${filter.name}`)
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                } else {
+                    return db.select('id')
+                        .from('orders')
+                        .where('userId', userId)
+                        .where("id", ">", leftOff)
+                        .whereNull("deactivated_at")
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                }
             } else if (direction === 'back') {
-                db.select('id')
-                    .from('orders')
-                    .where('userId', userId)
-                    .where("id", "<=", start)
-                    .whereNull("deactivated_at")
-                    .orderBy('id', 'desc')
-                    .limit(limit);
+                if (filter.name) {
+                    return db.select('id')
+                        .from('orders')
+                        .where('userId', userId)
+                        .where("id", "<", leftOff)
+                        .whereNull("deactivated_at")
+                        .where('name', 'like', `${filter.name}`)
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                } else {
+                    return db.select('id')
+                        .from('orders')
+                        .where('userId', userId)
+                        .where("id", "<", leftOff)
+                        .whereNull("deactivated_at")
+                        .orderBy('id', ORDER)
+                        .limit(limit);
+                }
             }
         };
 
@@ -257,7 +297,7 @@ module.exports = {
 
         if (result.length === 0) {
             return [];
-        }
+        };
 
         const orderIds = _.orderBy(result).map(m => m.id);
         const orderResult = await db.select(
@@ -274,7 +314,7 @@ module.exports = {
             .innerJoin('products_orders AS po', 'po.orderId', '=', 'o.id')
             .innerJoin('products AS p', 'p.id', '=', 'po.productId')
             .whereIn("o.id", orderIds)
-            .orderBy('o.id', 'asc');
+            .orderBy('o.id', ORDER);
 
         const resultGrouped = _.groupBy(orderResult, function (key) {
             return key.name;

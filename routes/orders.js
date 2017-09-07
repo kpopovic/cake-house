@@ -5,7 +5,6 @@
 const express = require('express');
 const router = express.Router();
 const orders = require('../repository/orders-db');
-const _ = require('lodash');
 
 router.post('/', async function (req, res) {
     try {
@@ -31,30 +30,40 @@ router.put('/', async function (req, res) {
 
 router.get('/', async function (req, res) {
     try {
-        const intStart = parseInt(req.query.start); // NaN if not integer
-        const intLimit = parseInt(req.query.limit); // NaN if not integer
-        const direction = req.query.direction === 'back' ? 'back' : 'next';
+        const leftOff = parseInt(req.query.leftOff); // NaN if not integer
+        const filterName = req.query.filter ? req.query.filter.name : null;
 
-        const start = Number.isInteger(intStart) && intStart > 0 ? intStart : 0;
-        const maxLimit = 50;
-        const limit = Number.isInteger(intLimit) && (intLimit > 0 && intLimit <= maxLimit) ? intLimit : maxLimit;
-        const aLimit = limit + 1; // +1 is to see if we have next page
+        const direction = (value, defaultValue) => {
+            if (value === 'first' || value === 'next' || value === 'back') {
+                return value;
+            } else {
+                return defaultValue;
+            }
+        };
+
+        const limit = (value, defaultValue) => {
+            const maxLimit = 100; // protection limit
+            const intValue = parseInt(value);
+            if (Number.isInteger(intValue) && intValue > 0 && intValue <= maxLimit) {
+                return intValue;
+            } else {
+                return defaultValue;
+            }
+        };
 
         const props = {
-            start: start,
-            direction: direction,
-            limit: aLimit
+            leftOff: leftOff,
+            direction: direction(req.query.direction, 'first'),
+            limit: limit(req.query.limit, 10),
+            filter: {
+                name: filterName
+            }
         };
 
         const result = await orders.list(req.db, req.userId, props);
-        const size = result.length;
 
-        if (size === 0) {
+        if (result.length === 0) {
             res.json({ code: 0, type: 'LIST_ORDER', message: 'No active orders listed', data: { orders: [] } });
-        } else if (aLimit === size) {
-            const orders = _.slice(result, 0, limit);
-            const leftOff = _.last(orders).id;
-            res.json({ code: 0, type: 'LIST_ORDER', message: 'Active orders are listed', data: { orders: orders, leftOff: leftOff } });
         } else {
             res.json({ code: 0, type: 'LIST_ORDER', message: 'Active orders are listed', data: { orders: result } });
         }

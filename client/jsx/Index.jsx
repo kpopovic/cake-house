@@ -11,7 +11,7 @@ import AuthStore from './../javascripts/stores/AuthStore'
 import IndexStore from './../javascripts/stores/IndexStore'
 import Material from './../jsx/material/Material'
 import Product from './../jsx/product/Product'
-import OrderContainer from './../jsx/order/OrderContainer'
+import Order from './../jsx/order/Order'
 import Reflux from 'reflux';
 
 export default class Index extends Reflux.Component {
@@ -58,7 +58,7 @@ export default class Index extends Reflux.Component {
                 </div>
 
                 <div style={activeItem === MENU_ORDER ? {} : { display: 'none' }}>
-                    <OrderContainer />
+                    <Order />
                 </div>
             </div>
         )

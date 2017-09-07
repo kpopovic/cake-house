@@ -4,16 +4,16 @@ import React, { Component } from 'react';
 import { Button, Grid, Header, Modal, Form, Input, Divider, Search, Table, Image } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
-import ProductModalActions from './../../javascripts/actions/product-modal-actions';
-import { buildStore } from './../../javascripts/stores/product-modal-store.js';
+import OrderModalActions from './../../javascripts/actions/order-modal-actions';
+import { buildStore } from './../../javascripts/stores/order-modal-store.js';
 import locale from './../../javascripts/locale';
 
-export default class ProductModal extends Reflux.Component {
+export default class OrderModal extends Reflux.Component {
     constructor() {
         super();
         this.store = buildStore();
 
-        ProductModalActions.save.completed.listen(() => {
+        OrderModalActions.save.completed.listen(() => {
             this.props.onSave();
         });
     }
@@ -85,7 +85,7 @@ export default class ProductModal extends Reflux.Component {
                         <Table.Cell>{locale[`material_unit_${material.unit}`]}</Table.Cell>
                         <Table.Cell>{material.quantityRequiredForProduction}</Table.Cell>
                         <Table.Cell>
-                            <Button color='red' onClick={(e, data) => { ProductModalActions.removeMaterial(material.id) }}>{locale.btn_remove}</Button>
+                            <Button color='red' onClick={(e, data) => { ProductModalActions.removeMaterial(material.id) }}>Remove</Button>
                         </Table.Cell>
                     </Table.Row>
                 )

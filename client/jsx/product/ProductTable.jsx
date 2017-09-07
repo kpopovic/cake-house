@@ -29,9 +29,9 @@ export default class ProductTable extends Reflux.Component {
                     <Table.Row key={index}>
                         <Table.Cell>{product.name}</Table.Cell>
                         <Table.Cell>{product.materials.length}</Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell textAlign="center">
                             <Button onClick={(e, data) => { ProductModalActions.showModal(product) }}>
-                                {locale.material_table_btn_edit}
+                                {locale.product_table_btn_edit}
                             </Button>
                         </Table.Cell>
                     </Table.Row>
@@ -63,7 +63,7 @@ export default class ProductTable extends Reflux.Component {
             <div>
                 <ProductSearchFilter onSearch={filter => ProductTableActions.listFirstPage(filter)} />
                 <ProductModal onSave={() => ProductTableActions.listFirstPage()} />
-                <Table basic>
+                <Table compact celled>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>{locale.product_table_header_name}</Table.HeaderCell>
@@ -76,8 +76,7 @@ export default class ProductTable extends Reflux.Component {
 
                     <Table.Footer fullWidth>
                         <Table.Row>
-                            <Table.HeaderCell />
-                            <Table.HeaderCell colSpan={5}>
+                            <Table.HeaderCell colSpan={3}>
                                 <Button
                                     primary
                                     floated='right'

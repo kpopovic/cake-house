@@ -6,6 +6,7 @@ module.exports = {
         connection: {
             host: '127.0.0.1',
             user: 'root',
+            timezone: 'utc',
             //password: '<no password in DEV mode>',
             database: 'cakehouse',
             charset: 'utf8'

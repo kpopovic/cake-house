@@ -32,7 +32,7 @@ export default class MaterialTable extends Reflux.Component {
                         <Table.Cell negative={isNegative}>{locale[`material_unit_${item.unit}`]}</Table.Cell>
                         <Table.Cell negative={isNegative}>{item.quantityInStock}</Table.Cell>
                         <Table.Cell negative={isNegative}>{item.quantityToBuy}</Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell textAlign="center">
                             <Button onClick={(e, data) => MaterialModalActions.showModalUpdateMaterial(item)}>
                                 {locale.material_table_btn_edit}
                             </Button>
@@ -51,7 +51,7 @@ export default class MaterialTable extends Reflux.Component {
             return (
                 <Table.Body>
                     <Table.Row key={1}>
-                        <Table.Cell colSpan={5}>
+                        <Table.Cell colSpan={7}>
                             <Image fluid src={locale.table_empty} />
                         </Table.Cell>
                     </Table.Row>
@@ -69,7 +69,7 @@ export default class MaterialTable extends Reflux.Component {
                     onUpdate={() => MaterialTableActions.listFirstPage()}
                 />
                 <MaterialSearchFilter onSearch={filter => MaterialTableActions.listFirstPage(filter)} />
-                <Table basic>
+                <Table compact celled>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>{locale.material_table_header_name}</Table.HeaderCell>
@@ -84,8 +84,7 @@ export default class MaterialTable extends Reflux.Component {
 
                     <Table.Footer fullWidth>
                         <Table.Row>
-                            <Table.HeaderCell />
-                            <Table.HeaderCell colSpan='5'>
+                            <Table.HeaderCell colSpan={5}>
                                 <Button floated='right' primary onClick={(e, data) => MaterialModalActions.showModalAddMaterial()}>
                                     {locale.material_table_btn_add}
                                 </Button>
