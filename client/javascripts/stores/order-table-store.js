@@ -20,7 +20,12 @@ class OrderTableStore extends Reflux.Store {
                 hasPrevious: false,
                 limit: theLimit,
                 filter: {
-                    name: null
+                    name: null,
+                    state: null,
+                    deliveryDate: {
+                        from: null,
+                        to: null
+                    }
                 }
             }
         };
@@ -31,16 +36,11 @@ class OrderTableStore extends Reflux.Store {
         const aLimit = limit + 1 // +1 is to see if we have next page
         const thefilter = queryFilter ? queryFilter : filter;
 
-        const thePromise = () => {
-            if (thefilter.name && thefilter.name.length > 0) {
-                const allNames = '%' + thefilter.name + '%';
-                return axios.get(`/v1/order?direction=first&filter[name]=${allNames}&limit=${aLimit}`);
-            } else {
-                return axios.get(`/v1/order?direction=first&limit=${aLimit}`);
-            }
-        }
+        const rootUrl = `/v1/order?direction=first&limit=${aLimit}`;
+        const url = this.urlFromParams(rootUrl, thefilter);
+        const thePromise = axios.get(url);
 
-        thePromise().then(response => {
+        thePromise.then(response => {
             if (response.data.code === 0) {
                 const orders = response.data.data.orders;
                 const size = orders.length;
@@ -95,16 +95,11 @@ class OrderTableStore extends Reflux.Store {
         const currentPage = this.state.store.currentPage;
         const nextCurrentPage = currentPage + 1;
 
-        const thePromise = () => {
-            if (filter.name && filter.name.length > 0) {
-                const allNames = '%' + filter.name + '%';
-                return axios.get(`/v1/order?direction=next&filter[name]=${allNames}&leftOff=${leftOff}&limit=${aLimit}`);
-            } else {
-                return axios.get(`/v1/order?direction=next&leftOff=${leftOff}&limit=${aLimit}`);
-            }
-        }
+        const rootUrl = `/v1/order?direction=next&limit=${aLimit}&leftOff=${leftOff}`;
+        const url = this.urlFromParams(rootUrl, filter);
+        const thePromise = axios.get(url);
 
-        thePromise().then(response => {
+        thePromise.then(response => {
             if (response.data.code === 0) {
                 const orders = response.data.data.orders;
                 const size = orders.length;
@@ -158,16 +153,11 @@ class OrderTableStore extends Reflux.Store {
         const leftOff = this.state.store.minLeftOff;
         const currentPage = this.state.store.currentPage;
 
-        const thePromise = () => {
-            if (filter.name && filter.name.length > 0) {
-                const allNames = '%' + filter.name + '%';
-                return axios.get(`/v1/order?direction=back&filter[name]=${allNames}&leftOff=${leftOff}&limit=${aLimit}`);
-            } else {
-                return axios.get(`/v1/order?direction=back&leftOff=${leftOff}&limit=${aLimit}`);
-            }
-        }
+        const rootUrl = `/v1/order?direction=back&limit=${aLimit}&leftOff=${leftOff}`;
+        const url = this.urlFromParams(rootUrl, filter);
+        const thePromise = axios.get(url);
 
-        thePromise().then(response => {
+        thePromise.then(response => {
             if (response.data.code === 0) {
                 const orders = response.data.data.orders;
                 const size = orders.length;
@@ -214,6 +204,34 @@ class OrderTableStore extends Reflux.Store {
             console.log(error);
         });
     }
+
+    urlFromParams(rootUrl, filter) {
+        let url = rootUrl;
+
+        if (!filter || _.isEmpty(filter)) {
+            return url;
+        }
+
+        if (filter.name && filter.name.length > 0) {
+            const allNames = '%' + filter.name + '%';
+            url = url + `&filter[name]=${allNames}`;
+        }
+
+        if (filter.state && filter.state.length > 0) {
+            url = url + `&filter[state]=${filter.state}`;
+        }
+
+        if (filter.deliveryDate.from) {
+            url = url + `&filter[fromDeliveryDate]=${filter.deliveryDate.from.format('YYYY-MM-DD')}`;
+        }
+
+        if (filter.deliveryDate.to) {
+            url = url + `&filter[toDeliveryDate]=${filter.deliveryDate.to.format('YYYY-MM-DD')}`;
+        }
+
+        return url;
+    }
+
 }
 
 export function buildStore(limit) {

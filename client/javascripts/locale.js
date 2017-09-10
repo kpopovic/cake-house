@@ -61,7 +61,7 @@ const locale = new LocalizedStrings({
         product_table_modal_btn_add: "Dodaj materijal",
 
         // order table
-        order_table_search: "Pretraga narudžbi",
+        order_table_search_placeholder: "Unesite naziv narudžbe",
         order_table_header_name: "Naziv",
         order_table_header_deliveryDate: "Rok dostave",
         order_table_header_state: "Status",
@@ -72,6 +72,7 @@ const locale = new LocalizedStrings({
         order_table_btn_edit: "Izmjeni",
         order_table_btn_add: "Unesi naružbu",
 
+        order_state_all: "Svi statusi",
         order_state_pending: "Naručeno",
         order_state_production: "Proizvodnja",
         order_state_done: "Završeno",
@@ -82,7 +83,8 @@ const locale = new LocalizedStrings({
 
         btn_add: "Potvrdi",
         btn_cancel: "Poništi",
-        btn_remove: "Ukloni"
+        btn_remove: "Ukloni",
+        btn_today: "Danas"
 
     }
 });

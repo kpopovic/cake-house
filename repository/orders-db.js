@@ -236,60 +236,37 @@ module.exports = {
 
         const orderIdsAsPromise = () => {
             if (direction === 'first') {
-                if (filter.name) {
-                    return db.select('id')
-                        .from('orders')
-                        .where('userId', userId)
-                        .whereNull("deactivated_at")
-                        .where('name', 'like', `${filter.name}`)
-                        .orderBy('id', ORDER)
-                        .limit(limit);
-                } else {
-                    return db.select('id')
-                        .from('orders')
-                        .where('userId', userId)
-                        .whereNull("deactivated_at")
-                        .orderBy('id', ORDER)
-                        .limit(limit);
-                }
+                return db.select('id')
+                    .from('orders')
+                    .where('userId', userId)
+                    .whereNull("deactivated_at")
+                    .where('name', 'like', `${filter.name}`)
+                    .where('state', 'like', `${filter.state}`)
+                    .andWhereBetween('deliveryDate', [filter.deliveryDate.from, filter.deliveryDate.to])
+                    .orderBy('id', ORDER)
+                    .limit(limit);
             } else if (direction === 'next') {
-                if (filter.name) {
-                    return db.select('id')
-                        .from('orders')
-                        .where('userId', userId)
-                        .where("id", ">", leftOff)
-                        .whereNull("deactivated_at")
-                        .where('name', 'like', `${filter.name}`)
-                        .orderBy('id', ORDER)
-                        .limit(limit);
-                } else {
-                    return db.select('id')
-                        .from('orders')
-                        .where('userId', userId)
-                        .where("id", ">", leftOff)
-                        .whereNull("deactivated_at")
-                        .orderBy('id', ORDER)
-                        .limit(limit);
-                }
+                return db.select('id')
+                    .from('orders')
+                    .where('userId', userId)
+                    .where("id", ">", leftOff)
+                    .whereNull("deactivated_at")
+                    .where('name', 'like', `${filter.name}`)
+                    .where('state', 'like', `${filter.state}`)
+                    .andWhereBetween('deliveryDate', [filter.deliveryDate.from, filter.deliveryDate.to])
+                    .orderBy('id', ORDER)
+                    .limit(limit);
             } else if (direction === 'back') {
-                if (filter.name) {
-                    return db.select('id')
-                        .from('orders')
-                        .where('userId', userId)
-                        .where("id", "<", leftOff)
-                        .whereNull("deactivated_at")
-                        .where('name', 'like', `${filter.name}`)
-                        .orderBy('id', ORDER)
-                        .limit(limit);
-                } else {
-                    return db.select('id')
-                        .from('orders')
-                        .where('userId', userId)
-                        .where("id", "<", leftOff)
-                        .whereNull("deactivated_at")
-                        .orderBy('id', ORDER)
-                        .limit(limit);
-                }
+                return db.select('id')
+                    .from('orders')
+                    .where('userId', userId)
+                    .where("id", "<", leftOff)
+                    .whereNull("deactivated_at")
+                    .where('name', 'like', `${filter.name}`)
+                    .where('state', 'like', `${filter.state}`)
+                    .andWhereBetween('deliveryDate', [filter.deliveryDate.from, filter.deliveryDate.to])
+                    .orderBy('id', ORDER)
+                    .limit(limit);
             }
         };
 

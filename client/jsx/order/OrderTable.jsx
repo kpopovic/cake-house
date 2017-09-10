@@ -9,15 +9,14 @@ import OrderSearchFilter from './OrderSearchFilter';
 import Pagination from './../Pagination';
 import OrderModalActions from './../../javascripts/actions/order-modal-actions';
 import OrderTableActions from './../../javascripts/actions/order-table-actions';
-import { buildStore as tableStore } from './../../javascripts/stores/order-table-store';
+import { buildStore } from './../../javascripts/stores/order-table-store';
 import locale from './../../javascripts/locale';
-import hrLocale from 'moment/locale/hr';
 import moment from 'moment';
 
 export default class OrderTable extends Reflux.Component {
     constructor(props) {
         super(props);
-        this.store = tableStore(props.pageSize);
+        this.store = buildStore(props.pageSize);
     }
 
     componentDidMount() {
@@ -25,13 +24,12 @@ export default class OrderTable extends Reflux.Component {
     }
 
     fillTableBody(orders) {
-        moment.locale('hr', hrLocale);
         if (Array.isArray(orders) && orders.length > 0) {
             const orderList = orders.map((order, index) => {
                 return (
                     <Table.Row key={index}>
                         <Table.Cell>{order.name}</Table.Cell>
-                        <Table.Cell>{moment.utc(order.deliveryDate).format('Do MMMM YYYY')}</Table.Cell>
+                        <Table.Cell>{moment.utc(order.deliveryDate).format('DD.MM.YYYY')}</Table.Cell>
                         <Table.Cell>{locale[`order_state_${order.state}`]}</Table.Cell>
                         <Table.Cell>{order.clientName}</Table.Cell>
                         <Table.Cell>{order.clientPhone}</Table.Cell>

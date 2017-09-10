@@ -13,10 +13,13 @@ import Material from './../jsx/material/Material'
 import Product from './../jsx/product/Product'
 import Order from './../jsx/order/Order'
 import Reflux from 'reflux';
+import hrLocale from 'moment/locale/hr';
+import moment from 'moment';
 
 export default class Index extends Reflux.Component {
     constructor() {
         super();
+        moment.updateLocale('hr', hrLocale); // global settings
         this.stores = [new AuthStore(true), new IndexStore(MENU_MATERIAL)];
     }
 

@@ -5,6 +5,8 @@
 const express = require('express');
 const router = express.Router();
 const orders = require('../repository/orders-db');
+const _ = require('lodash');
+const moment = require('moment');
 
 router.post('/', async function (req, res) {
     try {
@@ -31,32 +33,24 @@ router.put('/', async function (req, res) {
 router.get('/', async function (req, res) {
     try {
         const leftOff = parseInt(req.query.leftOff); // NaN if not integer
-        const filterName = req.query.filter ? req.query.filter.name : null;
-
-        const direction = (value, defaultValue) => {
-            if (value === 'first' || value === 'next' || value === 'back') {
-                return value;
-            } else {
-                return defaultValue;
-            }
-        };
-
-        const limit = (value, defaultValue) => {
-            const maxLimit = 100; // protection limit
-            const intValue = parseInt(value);
-            if (Number.isInteger(intValue) && intValue > 0 && intValue <= maxLimit) {
-                return intValue;
-            } else {
-                return defaultValue;
-            }
-        };
+        const filterName = _.get(req, 'query.filter.name', '%');
+        const filterState = _.get(req, 'query.filter.state', '%');
+        const direction = _.get(req, 'query.direction', 'first');
+        const limit = _.get(req, 'query.limit', 10);
+        const fromDeliveryDate = _.get(req, 'query.filter.fromDeliveryDate', moment().subtract(1, 'year').format('YYYY-MM-DD'));
+        const toDeliveryDate = _.get(req, 'query.filter.toDeliveryDate', moment().add(1, 'year').format('YYYY-MM-DD'));
 
         const props = {
             leftOff: leftOff,
-            direction: direction(req.query.direction, 'first'),
-            limit: limit(req.query.limit, 10),
+            direction: direction,
+            limit: limit,
             filter: {
-                name: filterName
+                name: filterName,
+                state: filterState,
+                deliveryDate: {
+                    from: fromDeliveryDate,
+                    to: toDeliveryDate
+                }
             }
         };
 
