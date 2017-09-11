@@ -1,81 +1,79 @@
 'use strict';
 
 import Reflux from 'reflux';
-import ProductModalActions from './../actions/product-modal-actions';
+import OrderModalActions from './../actions/order-modal-actions';
 import _ from 'lodash';
 import axios from 'axios';
 
-class ProductModalStore extends Reflux.Store {
+class OrderModalStore extends Reflux.Store {
 
     constructor() {
         super();
-        this.listenables = ProductModalActions;
+        this.listenables = OrderModalActions;
         this.state = { store: defaultState };
     }
 
     onSave() {
         const thePromise = () => {
-            const { productId, productName, materials } = this.state.store;
+            const { orderId, orderName, products } = this.state.store;
 
-            const materialQuantityList = materials.map(m => {
-                return { id: m.id, quantity: m.quantityRequiredForProduction }
+            const productQuantityList = materials.map(m => {
+                return { id: m.id, quantity: m.quantity }
             });
 
-            const data = { name: _.trim(productName), materials: materialQuantityList };
+            const data = { name: _.trim(productName), products: productQuantityList };
 
-            if (productId) {
-                return axios.put(`/v1/product?productId=${productId}`, data);
+            if (orderId) {
+                return axios.put(`/v1/order?orderId=${orderId}`, data);
             } else {
-                return axios.post("/v1/product", data);
+                return axios.post("/v1/order", data);
             }
         };
 
         thePromise().then(response => {
             if (response.data.code === 0) {
                 this.onResetStore();
-                ProductModalActions.save.completed();
+                OrderModalActions.save.completed();
             }
         }).catch(error => {
             console.log(error);
         });
     }
 
-    onAddMaterial() {
-        const { selectedMaterial, materialQuantity } = this.state.store.filter;
+    onAddProduct() {
+        const { selectedProduct, productQuantity } = this.state.store.filter;
 
-        if (selectedMaterial && materialQuantity > 0) {
-            const { materials } = this.state.store;
-            const data = _.cloneDeep(this.state.store);
-            const material = Object.assign({}, selectedMaterial, { quantityRequiredForProduction: materialQuantity });
-            data.materials = _.concat(materials, material);
+        if (selectedProduct && productQuantity > 0) {
+            const data = this.state.store;
+            const product = Object.assign({}, selectedProduct, { quantity: productQuantity });
+            data.products = _.concat(data.products, product);
             data.filter = defaultState.filter;
             this.setLocalState(data);
         } else {
-            console.warn("Material filter settings are not valid");
+            console.warn("Product filter settings are not valid");
         }
     }
 
-    onRemoveMaterial(id) {
-        const { materials } = this.state.store;
-        const data = _.cloneDeep(this.state.store);
-        const filteredMaterials = _.filter(materials, m => {
+    onRemoveProduct(id) {
+        const data = this.state.store;
+        const filteredProducts = _.filter(data.products, m => {
             return m.id !== id;
         });
 
-        data.materials = filteredMaterials;
+        data.products = filteredProducts;
         this.setLocalState(data);
     }
 
-    onShowModal(product) {
+    onShowModal(order) {
         const data = _.cloneDeep(defaultState);
-        data.productId = _.get(product, 'id', null);
-        data.productName = _.get(product, 'name', '');
-        data.materials = _.get(product, 'materials', []);
+        data.productId = _.get(order, 'id', null);
+        data.productName = _.get(order, 'name', '');
+        data.products = _.get(order, 'products', []);
         data.open = true;
         this.setLocalState(data);
     }
 
-    onSearchMaterial(name) {
+    onSearchProduct(name) {
         if (name.trim().length === 0) {
             this.resetFilter();
             return 0;
@@ -85,13 +83,13 @@ class ProductModalStore extends Reflux.Store {
         this.searchInProgressOn();
 
         const allNames = '%' + name + '%';
-        const promise = axios.get(`/v1/material?direction=first&limit=${limit}&filter[name]=${allNames}`);
+        const promise = axios.get(`/v1/product?direction=first&limit=${limit}&filter[name]=${allNames}`);
 
         promise.then(response => {
             if (response.data.code === 0) {
-                const data = _.cloneDeep(this.state.store);
-                data.filter.searchedMaterials = response.data.data.materials;
-                data.filter.materialName = name;
+                const data = this.state.store;
+                data.filter.searchedProducts = response.data.data.products;
+                data.filter.productName = name;
                 data.filter.isSearchInProgress = false;
                 this.setLocalState(data);
             }
@@ -100,17 +98,13 @@ class ProductModalStore extends Reflux.Store {
         });
     }
 
-    onSelectMaterial(id) {
-        if (Number.isInteger(id)) {
-            const materials = _.filter(this.state.store.filter.searchedMaterials, { id: id });
-            const data = _.cloneDeep(this.state.store);
-            data.filter.selectedMaterial = materials[0];
-            data.filter.materialName = materials[0].name;
-            data.filter.isSearchInProgress = false;
-            this.setLocalState(data);
-        } else {
-            console.warn(`Selected material id=${id} is not a number type`);
-        }
+    onSelectProduct(id) {
+        const products = _.filter(this.state.store.filter.searchedProducts, { id: id });
+        const data = this.state.store;
+        data.filter.searchedProducts = products[0];
+        data.filter.productName = products[0].name;
+        data.filter.isSearchInProgress = false;
+        this.setLocalState(data);
     }
 
     onResetStore() {
@@ -118,58 +112,53 @@ class ProductModalStore extends Reflux.Store {
     }
 
     resetFilter() {
-        const data = _.cloneDeep(this.state.store);
+        const data = this.state.store;
         data.filter = defaultState.filter;
         this.setLocalState(data);
     }
 
     searchInProgressOn() {
-        const data = _.cloneDeep(this.state.store);
+        const data = this.state.store;
         data.filter.isSearchInProgress = false;
         this.setLocalState(data);
     }
 
-    onSetMaterialQuantity(quantity) {
-        const data = _.cloneDeep(this.state.store);
-        const value = parseFloat(quantity);
-
-        if (_.isNumber(value) && _.isFinite(value)) {
-            data.filter.materialQuantity = value;
-        } else {
-            data.filter.materialQuantity = '';
-        }
-
+    onSetProductQuantity(quantity) {
+        const data = this.state.store;
+        const value = parseInt(quantity);
+        const isValidNumber = _.isNumber(value) && _.isFinite(value);
+        data.filter.productQuantity = isValidNumber ? value : '';
         this.setLocalState(data);
     }
 
-    onSetProductName(name) {
-        const data = _.cloneDeep(this.state.store);
+    onSetOrderName(name) {
+        const data = this.state.store;
         const isEmpty = _.isString(name) && _.trim(name).length === 0;
-        data.productName = isEmpty ? '' : name;
+        data.orderName = isEmpty ? '' : name;
         this.setLocalState(data);
     }
 
     setLocalState(data) {
-        const newData = _.cloneDeep(data);
-        this.setState({ store: newData });
+        this.setState({ store: data });
     }
 }
 
 const defaultState = {
     filter: {
-        materialName: '',
-        searchedMaterials: [],
-        selectedMaterial: null,
-        materialQuantity: '',
+        productName: '',
+        searchedProducts: [],
+        selectedProduct: null,
+        deliveryDate: null,
+        productQuantity: '',
         isSearchInProgress: false,
         limit: 10
     },
-    productId: null,
-    productName: '',
-    materials: [], // merge between selectedMaterial & currentProduct.materials
+    orderId: null,
+    orderName: '',
+    products: [],
     open: false
 };
 
 export function buildStore() {
-    return new ProductModalStore();
+    return new OrderModalStore();
 }
