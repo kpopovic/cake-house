@@ -42,7 +42,6 @@ export default class OrderSearchFilter extends Reflux.Component {
                 <Form.Group inline>
                     <Form.Field
                         control={DatePicker}
-                        isClearable={true}
                         placeholderText={locale.order_table_header_deliveryDate}
                         todayButton={locale.btn_today}
                         selected={deliveryDate.from}
@@ -50,10 +49,8 @@ export default class OrderSearchFilter extends Reflux.Component {
                     />
                     <Form.Field
                         control={DatePicker}
-                        isClearable={true}
                         placeholderText={locale.order_table_header_deliveryDate}
                         todayButton={locale.btn_today}
-                        maxDate={moment().add(1, 'year')}
                         selected={deliveryDate.to}
                         onChange={(m, e) => OrderSearchFilterActions.setToDeliveryDate(m)}
                     />

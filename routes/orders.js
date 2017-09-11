@@ -37,8 +37,8 @@ router.get('/', async function (req, res) {
         const filterState = _.get(req, 'query.filter.state', '%');
         const direction = _.get(req, 'query.direction', 'first');
         const limit = _.get(req, 'query.limit', 10);
-        const fromDeliveryDate = _.get(req, 'query.filter.fromDeliveryDate', moment().subtract(1, 'year').format('YYYY-MM-DD'));
-        const toDeliveryDate = _.get(req, 'query.filter.toDeliveryDate', moment().add(1, 'year').format('YYYY-MM-DD'));
+        const fromDeliveryDate = _.get(req, 'query.filter.fromDeliveryDate', moment().subtract(1, 'month').format('YYYY-MM-DD'));
+        const toDeliveryDate = _.get(req, 'query.filter.toDeliveryDate', moment().add(3, 'month').format('YYYY-MM-DD'));
 
         const props = {
             leftOff: leftOff,
