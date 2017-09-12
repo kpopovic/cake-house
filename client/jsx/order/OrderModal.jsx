@@ -18,7 +18,7 @@ export default class OrderModal extends Reflux.Component {
         });
     }
 
-    renderProductName(name) {
+    renderOrderName(name) {
         return (
             <Form>
                 <Form.Group>
@@ -26,7 +26,7 @@ export default class OrderModal extends Reflux.Component {
                         label={locale.product_table_modal_productName}
                         placeholder={locale.product_table_modal_productName_placeholder}
                         value={name}
-                        onChange={(e, { value }) => ProductModalActions.setProductName(value)}
+                        onChange={(e, { value }) => OrderModalActions.setOrderName(value)}
                     />
                 </Form.Group>
             </Form>
@@ -34,11 +34,11 @@ export default class OrderModal extends Reflux.Component {
     }
 
     renderFilterForm(data) {
-        const { materialName, searchedMaterials, selectedMaterial, materialQuantity, isSearchInProgress } = data;
-        const disableButton = !(selectedMaterial && materialQuantity && materialQuantity > 0);
+        const { productName, searchedProducts, selectedProduct, productQuantity, isSearchInProgress } = data;
+        const disableButton = !(selectedProduct && productQuantity && productQuantity > 0);
 
-        const results = searchedMaterials.map(m => {
-            return { id: m.id, title: m.name, description: locale[`material_unit_${m.unit}`] }
+        const results = searchedProducts.map(m => {
+            return { id: m.id, title: m.name, description: 'test' }
         });
 
         return (
@@ -50,24 +50,24 @@ export default class OrderModal extends Reflux.Component {
                         control={Search}
                         loading={isSearchInProgress}
                         results={results}
-                        value={materialName}
+                        value={productName}
                         noResultsMessage={locale.product_table_modal_material_noResultsMessage}
-                        onResultSelect={(e, { result }) => ProductModalActions.selectMaterial(result.id)}
-                        onSearchChange={(e, { value }) => ProductModalActions.searchMaterial(value)}
+                        onResultSelect={(e, { result }) => OrderModalActions.selectProduct(result.id)}
+                        onSearchChange={(e, { value }) => OrderModalActions.searchProduct(value)}
                     />
                     <Form.Input
                         label={locale.product_table_modal_material_quantity}
                         placeholder={locale.product_table_modal_material_quantity_placeholder}
                         type='number'
-                        value={materialQuantity}
-                        onChange={(e, { value }) => ProductModalActions.setMaterialQuantity(value)}
+                        value={productQuantity}
+                        onChange={(e, { value }) => OrderModalActions.setProductQuantity(value)}
                     />
                     <Form.Field>
                         <label style={{ whiteSpace: 'pre' }}> </label>
                         <Button
                             primary
                             disabled={disableButton}
-                            onClick={(e, data) => { ProductModalActions.addMaterial(selectedMaterial.id, materialQuantity) }}>
+                            onClick={(e, data) => { OrderModalActions.addProduct(selectedProduct.id, productQuantity) }}>
                             {locale.product_table_modal_btn_add}
                         </Button>
                     </Form.Field>
@@ -76,25 +76,24 @@ export default class OrderModal extends Reflux.Component {
         )
     }
 
-    renderInputForm(materials) {
+    renderInputForm(products) {
         const renderTableBody = () => {
-            const materialList = materials.map((material, index) => {
+            const productList = products.map((product, index) => {
                 return (
                     <Table.Row key={index}>
-                        <Table.Cell>{material.name}</Table.Cell>
-                        <Table.Cell>{locale[`material_unit_${material.unit}`]}</Table.Cell>
-                        <Table.Cell>{material.quantityRequiredForProduction}</Table.Cell>
+                        <Table.Cell>{product.name}</Table.Cell>
+                        <Table.Cell>{product.quantity}</Table.Cell>
                         <Table.Cell>
-                            <Button color='red' onClick={(e, data) => { ProductModalActions.removeMaterial(material.id) }}>Remove</Button>
+                            <Button color='red' onClick={(e, data) => { OrderModalActions.removeProduct(product.id) }}>{locale.btn_remove}</Button>
                         </Table.Cell>
                     </Table.Row>
                 )
             });
 
-            if (materialList.length > 0) {
+            if (productList.length > 0) {
                 return (
                     <Table.Body>
-                        {materialList}
+                        {productList}
                     </Table.Body>
                 )
             } else {
@@ -126,21 +125,21 @@ export default class OrderModal extends Reflux.Component {
     }
 
     render() {
-        const { filter, productId, productName, materials, open } = this.state.store;
-        const disableSaveBtn = materials.length === 0 || productName.length === 0;
-        const headerTitle = productId ? locale.product_table_modal_edit_title : locale.product_table_modal_add_title;
+        const { filter, orderId, orderName, products, open } = this.state.store;
+        const disableSaveBtn = products.length === 0 || orderName.length === 0;
+        const headerTitle = orderId ? locale.order_table_modal_edit_title : locale.order_table_modal_add_title;
 
         return (
-            <Modal dimmer='blurring' open={open} onClose={(e, data) => { ProductModalActions.resetStore() }}>
+            <Modal dimmer='blurring' open={open} onClose={(e, data) => { OrderModalActions.resetStore() }}>
                 <Modal.Header>{headerTitle}</Modal.Header>
                 <Modal.Content scrolling>
-                    {this.renderProductName(productName)}
+                    {this.renderOrderName(orderName)}
                     {this.renderFilterForm(filter)}
                     <Divider />
-                    {this.renderInputForm(materials)}
+                    {this.renderInputForm(products)}
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button onClick={(e, data) => { ProductModalActions.resetStore() }}>
+                    <Button onClick={(e, data) => { OrderModalActions.resetStore() }}>
                         {locale.btn_cancel}
                     </Button>
                     <Button
@@ -149,7 +148,7 @@ export default class OrderModal extends Reflux.Component {
                         icon='checkmark'
                         labelPosition='right'
                         content={locale.btn_add}
-                        onClick={(e, data) => { ProductModalActions.save() }}
+                        onClick={(e, data) => { OrderModalActions.save() }}
                     />
                 </Modal.Actions>
             </Modal>
@@ -157,7 +156,7 @@ export default class OrderModal extends Reflux.Component {
     }
 }
 
-ProductModal.propTypes = {
+OrderModal.propTypes = {
     onSave: PropTypes.func.isRequired
 };
 

@@ -72,6 +72,9 @@ const locale = new LocalizedStrings({
         order_table_btn_edit: "Izmjeni",
         order_table_btn_add: "Unesi naružbu",
 
+        order_table_modal_add_title: "Unos nove narudžbe",
+        order_table_modal_edit_title: "Izmjena narudžbe",
+
         order_state_all: "Svi statusi",
         order_state_pending: "Naručeno",
         order_state_production: "Proizvodnja",

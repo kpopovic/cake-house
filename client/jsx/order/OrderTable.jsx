@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { Button, Grid, Image, Table } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
-//import OrderModal from './OrderModal';
+import OrderModal from './OrderModal';
 import OrderSearchFilter from './OrderSearchFilter';
 import Pagination from './../Pagination';
 import OrderModalActions from './../../javascripts/actions/order-modal-actions';
@@ -35,7 +35,7 @@ export default class OrderTable extends Reflux.Component {
                         <Table.Cell>{order.clientPhone}</Table.Cell>
                         <Table.Cell>{order.products.length}</Table.Cell>
                         <Table.Cell textAlign="center">
-                            <Button onClick={(e, data) => { ProductModalActions.showModal(order) }}>
+                            <Button onClick={(e, data) => { OrderModalActions.showModal(order) }}>
                                 {locale.order_table_btn_edit}
                             </Button>
                         </Table.Cell>
@@ -66,6 +66,7 @@ export default class OrderTable extends Reflux.Component {
         const { list, hasNext, hasPrevious, filter } = this.state.store;
         return (
             <div>
+                <OrderModal onSave={() => OrderTableActions.listFirstPage()} />
                 <OrderSearchFilter onSearch={filter => OrderTableActions.listFirstPage(filter)} />
                 <Table compact celled>
                     <Table.Header>

@@ -66,8 +66,8 @@ class OrderModalStore extends Reflux.Store {
 
     onShowModal(order) {
         const data = _.cloneDeep(defaultState);
-        data.productId = _.get(order, 'id', null);
-        data.productName = _.get(order, 'name', '');
+        data.orderId = _.get(order, 'id', null);
+        data.orderName = _.get(order, 'name', '');
         data.products = _.get(order, 'products', []);
         data.open = true;
         this.setLocalState(data);
@@ -100,8 +100,10 @@ class OrderModalStore extends Reflux.Store {
 
     onSelectProduct(id) {
         const products = _.filter(this.state.store.filter.searchedProducts, { id: id });
+        console.log("searchedProducts=" + JSON.stringify(this.state.store.filter.searchedProducts, null, 2));
+        console.log("products=" + JSON.stringify(products, null, 2));
         const data = this.state.store;
-        data.filter.searchedProducts = products[0];
+        data.filter.selectedProduct = products[0];
         data.filter.productName = products[0].name;
         data.filter.isSearchInProgress = false;
         this.setLocalState(data);
@@ -139,7 +141,8 @@ class OrderModalStore extends Reflux.Store {
     }
 
     setLocalState(data) {
-        this.setState({ store: data });
+        const newData = _.cloneDeep(data);
+        this.setState({ store: newData });
     }
 }
 
