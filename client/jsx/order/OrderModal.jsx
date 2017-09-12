@@ -38,27 +38,29 @@ export default class OrderModal extends Reflux.Component {
         const disableButton = !(selectedProduct && productQuantity && productQuantity > 0);
 
         const results = searchedProducts.map(m => {
-            return { id: m.id, title: m.name, description: 'test' }
+            return { id: m.id, title: m.name }
         });
 
         return (
             <Form>
                 <Form.Group widths='equal'>
                     <Form.Field
-                        label={locale.product_table_modal_material_search}
-                        placeholder={locale.product_table_modal_material_search_placeholder}
+                        label={locale.order_table_modal_product_search}
+                        placeholder={locale.order_table_modal_product_search_placeholder}
                         control={Search}
                         loading={isSearchInProgress}
                         results={results}
                         value={productName}
-                        noResultsMessage={locale.product_table_modal_material_noResultsMessage}
+                        noResultsMessage={locale.order_table_modal_product_noResultsMessage}
                         onResultSelect={(e, { result }) => OrderModalActions.selectProduct(result.id)}
                         onSearchChange={(e, { value }) => OrderModalActions.searchProduct(value)}
                     />
                     <Form.Input
-                        label={locale.product_table_modal_material_quantity}
-                        placeholder={locale.product_table_modal_material_quantity_placeholder}
+                        label={locale.order_table_modal_product_quantity}
+                        placeholder={locale.order_table_modal_product_quantity_placeholder}
                         type='number'
+                        min={1}
+                        step={1}
                         value={productQuantity}
                         onChange={(e, { value }) => OrderModalActions.setProductQuantity(value)}
                     />
@@ -68,7 +70,7 @@ export default class OrderModal extends Reflux.Component {
                             primary
                             disabled={disableButton}
                             onClick={(e, data) => { OrderModalActions.addProduct(selectedProduct.id, productQuantity) }}>
-                            {locale.product_table_modal_btn_add}
+                            {locale.order_table_modal_btn_add}
                         </Button>
                     </Form.Field>
                 </Form.Group>
@@ -113,10 +115,9 @@ export default class OrderModal extends Reflux.Component {
             <Table basic>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell>{locale.material_table_header_name}</Table.HeaderCell>
-                        <Table.HeaderCell>{locale.material_table_header_unit}</Table.HeaderCell>
-                        <Table.HeaderCell>{locale.material_table_header_quantity}</Table.HeaderCell>
-                        <Table.HeaderCell>{locale.material_table_header_edit}</Table.HeaderCell>
+                        <Table.HeaderCell>{locale.order_table_header_name}</Table.HeaderCell>
+                        <Table.HeaderCell>{locale.order_table_header_quantity}</Table.HeaderCell>
+                        <Table.HeaderCell>{locale.order_table_header_edit}</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
                 {renderTableBody()}

@@ -12,7 +12,10 @@ const locale = new LocalizedStrings({
         'login_page.error.username.length': "Korisničko ime mora imati {0} do {1} znakova",
         'login_page.error.password.length': "Lozinka mora imati {0} do {1} znakova",
 
-        index_page_material_menu_title: "Materijal",
+        index_page_material_menu_title: "Materijali",
+        index_page_product_menu_title: "Proizvodi",
+        index_page_orders_menu_title: "Narudžbe",
+
         index_page_signout: "Izlaz",
 
         table_empty: "https://semantic-ui.com/images/wireframe/media-paragraph.png",
@@ -42,7 +45,7 @@ const locale = new LocalizedStrings({
         // product table
         product_table_search: "Pretraga proizvoda",
         product_table_header_name: "Naziv",
-        product_table_header_quantity: "Broj materijala",
+        product_table_header_quantity: "Količina materijala",
         product_table_header_edit: "Izmjena",
         product_table_btn_edit: "Izmjeni",
         product_table_btn_add: "Unesi proizvod",
@@ -67,13 +70,19 @@ const locale = new LocalizedStrings({
         order_table_header_state: "Status",
         order_table_header_clientName: "Klijent",
         order_table_header_clientPhone: "Telefon",
-        order_table_header_quantity: "Broj proizvoda",
+        order_table_header_quantity: "Količina proizvoda",
         order_table_header_edit: "Izmjena",
         order_table_btn_edit: "Izmjeni",
         order_table_btn_add: "Unesi naružbu",
 
         order_table_modal_add_title: "Unos nove narudžbe",
         order_table_modal_edit_title: "Izmjena narudžbe",
+        order_table_modal_product_search: "Pretraga proizvoda",
+        order_table_modal_product_search_placeholder: "Unesite naziv proizvoda",
+        order_table_modal_product_noResultsMessage: "Proizvod nije pronađen",
+        order_table_modal_product_quantity: "Količina proizvoda (komad)",
+        order_table_modal_product_quantity_placeholder: "Unesite količinu za proizvodnju",
+        order_table_modal_btn_add: "Dodaj narudžbu",
 
         order_state_all: "Svi statusi",
         order_state_pending: "Naručeno",

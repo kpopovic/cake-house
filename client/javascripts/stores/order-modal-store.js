@@ -17,11 +17,11 @@ class OrderModalStore extends Reflux.Store {
         const thePromise = () => {
             const { orderId, orderName, products } = this.state.store;
 
-            const productQuantityList = materials.map(m => {
+            const productQuantityList = products.map(m => {
                 return { id: m.id, quantity: m.quantity }
             });
 
-            const data = { name: _.trim(productName), products: productQuantityList };
+            const data = { name: _.trim(orderName), products: productQuantityList };
 
             if (orderId) {
                 return axios.put(`/v1/order?orderId=${orderId}`, data);
@@ -100,8 +100,6 @@ class OrderModalStore extends Reflux.Store {
 
     onSelectProduct(id) {
         const products = _.filter(this.state.store.filter.searchedProducts, { id: id });
-        console.log("searchedProducts=" + JSON.stringify(this.state.store.filter.searchedProducts, null, 2));
-        console.log("products=" + JSON.stringify(products, null, 2));
         const data = this.state.store;
         data.filter.selectedProduct = products[0];
         data.filter.productName = products[0].name;

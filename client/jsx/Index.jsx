@@ -40,10 +40,10 @@ export default class Index extends Reflux.Component {
                         {locale.index_page_material_menu_title}
                     </Menu.Item>
                     <Menu.Item name={MENU_PRODUCT} active={activeItem === MENU_PRODUCT} onClick={(e, data) => IndexActions.setActiveItem(MENU_PRODUCT)}>
-                        MENU_PRODUCT
+                        {locale.index_page_product_menu_title}
                     </Menu.Item>
                     <Menu.Item name={MENU_ORDER} active={activeItem === MENU_ORDER} onClick={(e, data) => IndexActions.setActiveItem(MENU_ORDER)}>
-                        MENU_ORDER
+                        {locale.index_page_orders_menu_title}
                     </Menu.Item>
                     <Menu.Menu position='right'>
                         <Menu.Item>
