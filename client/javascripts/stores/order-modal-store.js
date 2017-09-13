@@ -15,13 +15,13 @@ class OrderModalStore extends Reflux.Store {
 
     onSave() {
         const thePromise = () => {
-            const { orderId, orderName, products } = this.state.store;
+            const { orderId, orderName, orderState, products } = this.state.store;
 
             const productQuantityList = products.map(m => {
                 return { id: m.id, quantity: m.quantity }
             });
 
-            const data = { name: _.trim(orderName), products: productQuantityList };
+            const data = { name: _.trim(orderName), state: orderState, products: productQuantityList };
 
             if (orderId) {
                 return axios.put(`/v1/order?orderId=${orderId}`, data);
@@ -68,6 +68,7 @@ class OrderModalStore extends Reflux.Store {
         const data = _.cloneDeep(defaultState);
         data.orderId = _.get(order, 'id', null);
         data.orderName = _.get(order, 'name', '');
+        data.orderState = _.get(order, 'state', 'pending');
         data.products = _.get(order, 'products', []);
         data.open = true;
         this.setLocalState(data);
@@ -138,6 +139,13 @@ class OrderModalStore extends Reflux.Store {
         this.setLocalState(data);
     }
 
+    onSetOrderState(state) {
+        const data = this.state.store;
+        const isEmpty = _.isString(state) && _.trim(state).length === 0;
+        data.orderState = isEmpty ? 'pending' : state;
+        this.setLocalState(data);
+    }
+
     setLocalState(data) {
         const newData = _.cloneDeep(data);
         this.setState({ store: newData });
@@ -156,6 +164,7 @@ const defaultState = {
     },
     orderId: null,
     orderName: '',
+    orderState: 'pending',
     products: [],
     open: false
 };

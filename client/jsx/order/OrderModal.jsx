@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { Button, Grid, Header, Modal, Form, Input, Divider, Search, Table, Image } from 'semantic-ui-react';
+import { Button, Checkbox, Grid, Header, Modal, Form, Input, Divider, Search, Table, Image } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
 import OrderModalActions from './../../javascripts/actions/order-modal-actions';
@@ -18,16 +18,48 @@ export default class OrderModal extends Reflux.Component {
         });
     }
 
-    renderOrderName(name) {
+    renderOrderForm(name, state) {
         return (
             <Form>
-                <Form.Group>
-                    <Form.Input
-                        label={locale.product_table_modal_productName}
-                        placeholder={locale.product_table_modal_productName_placeholder}
-                        value={name}
-                        onChange={(e, { value }) => OrderModalActions.setOrderName(value)}
-                    />
+                <Form.Input
+                    width={4}
+                    label={locale.product_table_modal_productName}
+                    placeholder={locale.product_table_modal_productName_placeholder}
+                    value={name}
+                    onChange={(e, { value }) => OrderModalActions.setOrderName(value)}
+                />
+                <Form.Group inline>
+                    <label>Status</label>
+                    <Form.Field>
+                        <Checkbox
+                            radio
+                            label='pending'
+                            name='checkboxRadioGroup'
+                            value='pending'
+                            checked={state === 'pending'}
+                            onChange={(e, { value }) => OrderModalActions.setOrderState(value)}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <Checkbox
+                            radio
+                            label='production'
+                            name='checkboxRadioGroup'
+                            value='production'
+                            checked={state === 'production'}
+                            onChange={(e, { value }) => OrderModalActions.setOrderState(value)}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <Checkbox
+                            radio
+                            label='done'
+                            name='checkboxRadioGroup'
+                            value='done'
+                            checked={state === 'done'}
+                            onChange={(e, { value }) => OrderModalActions.setOrderState(value)}
+                        />
+                    </Form.Field>
                 </Form.Group>
             </Form>
         )
@@ -126,7 +158,7 @@ export default class OrderModal extends Reflux.Component {
     }
 
     render() {
-        const { filter, orderId, orderName, products, open } = this.state.store;
+        const { filter, orderId, orderName, orderState, products, open } = this.state.store;
         const disableSaveBtn = products.length === 0 || orderName.length === 0;
         const headerTitle = orderId ? locale.order_table_modal_edit_title : locale.order_table_modal_add_title;
 
@@ -134,7 +166,7 @@ export default class OrderModal extends Reflux.Component {
             <Modal dimmer='blurring' open={open} onClose={(e, data) => { OrderModalActions.resetStore() }}>
                 <Modal.Header>{headerTitle}</Modal.Header>
                 <Modal.Content scrolling>
-                    {this.renderOrderName(orderName)}
+                    {this.renderOrderForm(orderName, orderState)}
                     {this.renderFilterForm(filter)}
                     <Divider />
                     {this.renderInputForm(products)}
@@ -156,6 +188,12 @@ export default class OrderModal extends Reflux.Component {
         )
     }
 }
+
+const options = [
+    { key: 'pending', text: `${locale.order_state_pending}`, value: 'pending' },
+    { key: 'production', text: `${locale.order_state_production}`, value: 'production' },
+    { key: 'done', text: `${locale.order_state_done}`, value: 'done' }
+]
 
 OrderModal.propTypes = {
     onSave: PropTypes.func.isRequired

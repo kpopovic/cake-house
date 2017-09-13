@@ -10,6 +10,7 @@ const OrderModalActions = Reflux.createActions([
     "removeProduct",
     "setProductQuantity",
     "setOrderName",
+    "setOrderState",
     "resetStore"
 ]);
 
