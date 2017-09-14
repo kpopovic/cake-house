@@ -4,6 +4,7 @@ import Reflux from 'reflux';
 import OrderModalActions from './../actions/order-modal-actions';
 import _ from 'lodash';
 import axios from 'axios';
+import moment from 'moment';
 
 class OrderModalStore extends Reflux.Store {
 
@@ -15,13 +16,20 @@ class OrderModalStore extends Reflux.Store {
 
     onSave() {
         const thePromise = () => {
-            const { orderId, orderName, orderState, products } = this.state.store;
+            const { orderId, orderName, deliveryDate, orderState, clientName, clientPhone, products } = this.state.store;
 
             const productQuantityList = products.map(m => {
                 return { id: m.id, quantity: m.quantity }
             });
 
-            const data = { name: _.trim(orderName), state: orderState, products: productQuantityList };
+            const data = {
+                name: _.trim(orderName),
+                state: orderState,
+                deliveryDate: deliveryDate.format('YYYY-MM-DD'),
+                clientName: _.trim(clientName),
+                clientPhone: _.trim(clientPhone),
+                products: productQuantityList
+            };
 
             if (orderId) {
                 return axios.put(`/v1/order?orderId=${orderId}`, data);
@@ -66,9 +74,15 @@ class OrderModalStore extends Reflux.Store {
 
     onShowModal(order) {
         const data = _.cloneDeep(defaultState);
+        const deliveryDate = _.get(order, 'deliveryDate', null);
+
         data.orderId = _.get(order, 'id', null);
         data.orderName = _.get(order, 'name', '');
+        data.deliveryDate = deliveryDate ? moment(deliveryDate) : null;
         data.orderState = _.get(order, 'state', 'pending');
+        data.products = _.get(order, 'products', []);
+        data.clientName = _.get(order, 'clientName', '');
+        data.clientPhone = _.get(order, 'clientPhone', '');
         data.products = _.get(order, 'products', []);
         data.open = true;
         this.setLocalState(data);
@@ -139,10 +153,30 @@ class OrderModalStore extends Reflux.Store {
         this.setLocalState(data);
     }
 
+    onSetDeliveryDate(dateMoment) {
+        const data = this.state.store;
+        data.deliveryDate = dateMoment;
+        this.setLocalState(data);
+    }
+
     onSetOrderState(state) {
         const data = this.state.store;
         const isEmpty = _.isString(state) && _.trim(state).length === 0;
         data.orderState = isEmpty ? 'pending' : state;
+        this.setLocalState(data);
+    }
+
+    onSetClientName(name) {
+        const data = this.state.store;
+        const isEmpty = _.isString(name) && _.trim(name).length === 0;
+        data.clientName = isEmpty ? '' : name;
+        this.setLocalState(data);
+    }
+
+    onSetClientPhone(phone) {
+        const data = this.state.store;
+        const isEmpty = _.isString(phone) && _.trim(phone).length === 0;
+        data.clientPhone = isEmpty ? '' : phone;
         this.setLocalState(data);
     }
 
@@ -164,7 +198,10 @@ const defaultState = {
     },
     orderId: null,
     orderName: '',
+    deliveryDate: null, // moment
     orderState: 'pending',
+    clientName: '',
+    clientPhone: '',
     products: [],
     open: false
 };

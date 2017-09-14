@@ -2,11 +2,13 @@
 
 import React, { Component } from 'react';
 import { Button, Checkbox, Grid, Header, Modal, Form, Input, Divider, Search, Table, Image } from 'semantic-ui-react';
+import DatePicker from 'react-datepicker';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
 import OrderModalActions from './../../javascripts/actions/order-modal-actions';
 import { buildStore } from './../../javascripts/stores/order-modal-store.js';
 import locale from './../../javascripts/locale';
+import moment from 'moment';
 
 export default class OrderModal extends Reflux.Component {
     constructor() {
@@ -18,18 +20,40 @@ export default class OrderModal extends Reflux.Component {
         });
     }
 
-    renderOrderForm(name, state) {
+
+    renderOrderForm(name, state, deliveryDate, clientName, clientPhone) {
         return (
             <Form>
-                <Form.Input
-                    width={4}
-                    label={locale.product_table_modal_productName}
-                    placeholder={locale.product_table_modal_productName_placeholder}
-                    value={name}
-                    onChange={(e, { value }) => OrderModalActions.setOrderName(value)}
-                />
+                <Form.Group>
+                    <Form.Input
+                        label={locale.order_table_header_name}
+                        placeholder={locale.order_table_search_placeholder}
+                        value={name}
+                        onChange={(e, { value }) => OrderModalActions.setOrderName(value)}
+                    />
+                    <Form.Field
+                        control={DatePicker}
+                        label={locale.order_table_header_deliveryDate}
+                        placeholderText={locale.order_table_header_deliveryDate}
+                        todayButton={locale.btn_today}
+                        selected={deliveryDate}
+                        onChange={(m, e) => OrderModalActions.setDeliveryDate(m)}
+                    />
+                    <Form.Input
+                        label={locale.order_table_header_clientName}
+                        placeholder={locale.order_table_header_clientName_placeholder}
+                        value={clientName}
+                        onChange={(e, { value }) => OrderModalActions.setClientName(value)}
+                    />
+                    <Form.Input
+                        label={locale.order_table_header_clientPhone}
+                        placeholder={locale.order_table_header_clientPhone_placeholder}
+                        value={clientPhone}
+                        onChange={(e, { value }) => OrderModalActions.setClientPhone(value)}
+                    />
+                </Form.Group>
                 <Form.Group inline>
-                    <label>Status</label>
+                    <label>{locale.order_table_header_state}</label>
                     <Form.Field>
                         <Checkbox
                             radio
@@ -158,15 +182,15 @@ export default class OrderModal extends Reflux.Component {
     }
 
     render() {
-        const { filter, orderId, orderName, orderState, products, open } = this.state.store;
-        const disableSaveBtn = products.length === 0 || orderName.length === 0;
+        const { filter, orderId, orderName, deliveryDate, orderState, clientName, clientPhone, products, open } = this.state.store;
+        const disableSaveBtn = products.length === 0 || orderName.length === 0 || clientName.length === 0 || deliveryDate == null;
         const headerTitle = orderId ? locale.order_table_modal_edit_title : locale.order_table_modal_add_title;
 
         return (
             <Modal dimmer='blurring' open={open} onClose={(e, data) => { OrderModalActions.resetStore() }}>
                 <Modal.Header>{headerTitle}</Modal.Header>
                 <Modal.Content scrolling>
-                    {this.renderOrderForm(orderName, orderState)}
+                    {this.renderOrderForm(orderName, orderState, deliveryDate, clientName, clientPhone)}
                     {this.renderFilterForm(filter)}
                     <Divider />
                     {this.renderInputForm(products)}
