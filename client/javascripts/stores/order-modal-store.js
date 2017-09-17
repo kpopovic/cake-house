@@ -75,16 +75,19 @@ class OrderModalStore extends Reflux.Store {
     onShowModal(order) {
         const data = _.cloneDeep(defaultState);
         const deliveryDate = _.get(order, 'deliveryDate', null);
+        const state = _.get(order, 'state', 'pending');
 
         data.orderId = _.get(order, 'id', null);
         data.orderName = _.get(order, 'name', '');
         data.deliveryDate = deliveryDate ? moment(deliveryDate) : null;
-        data.orderState = _.get(order, 'state', 'pending');
+        data.orderState = state;
         data.products = _.get(order, 'products', []);
         data.clientName = _.get(order, 'clientName', '');
         data.clientPhone = _.get(order, 'clientPhone', '');
         data.products = _.get(order, 'products', []);
         data.open = true;
+        data.readOnlyAll = (state === 'done');
+        data.readOnlyDoneButton = (state === 'pending' || state === 'done');
         this.setLocalState(data);
     }
 
@@ -203,7 +206,9 @@ const defaultState = {
     clientName: '',
     clientPhone: '',
     products: [],
-    open: false
+    open: false,
+    readOnlyAll: false,
+    readOnlyDoneButton: false
 };
 
 export function buildStore() {

@@ -2,8 +2,8 @@
 
 const knex = require('knex');
 const products = require('./products-db');
-const materials = require('./materials-db');
-const materials_products = require('./materials-products-db');
+const materialsDB = require('./materials-db');
+//const materials_products = require('./materials-products-db');
 const products_orders = require('./products-orders-db');
 const _ = require('lodash');
 const moment = require('moment');
@@ -56,7 +56,7 @@ module.exports = {
      *    clientPhone: '00000000001',
      *    deliveryDate: <YYYY-MM-DD HH:mm:ss>,
      *    products: [{ id: 1, quantity: 2 }, { id: 2, quantity: 3 }],
-     *    state: 'production'
+     *    state: 'pending|production'
      * }
      *
      */
@@ -98,6 +98,58 @@ module.exports = {
             }
 
         });
+    },
+
+    /**
+     * Set orders state from production to done.
+     * This is only possible to do if there is enought material in the stock for production process.
+     *
+     * {
+     *    id: 1
+     * }
+     *
+     */
+    finishOrder: async function (/** @type {knex} */ db, /** @type {number} */ userId, /** @type {object} */ props) {
+        const orderId = props.id;
+
+        // find all products in this order
+        const orders = await this.listById(db, userId, { orderId: orderId });
+        const productIds = _.head(orders).products.map(p => p.id);
+        const productList = await products.listById(db, userId, { productId: productIds });
+
+        // collect all materials from all products in this order
+        const materials = _.flattenDeep(productList.map(p => p.materials));
+        const materialsGrouped = _.groupBy(materials, function (key) {
+            return key.id;
+        });
+
+        const toUpdate = _.keys(materialsGrouped).map(key => {
+            const materials = materialsGrouped[key]; // all with the same material id
+            const materialsHead = _.head(materials);
+            const materialId = materialsHead.id;
+            const materialName = materialsHead.name;
+            const quantityInStock = materialsHead.quantityInStock;
+            const quantityRequiredForProductionSum = _.sumBy(materials, 'quantityRequiredForProduction');
+            const newQuantityInStock = quantityInStock - quantityRequiredForProductionSum;
+
+            return { id: materialId, name: materialName, quantityInStock: newQuantityInStock };
+        });
+
+        // validate if all materialsTransformed.quantityInStock are > 0
+        const errorList = toUpdate.filter(m => m.quantityInStock < 0);
+        if (!_.isEmpty(errorList)) {
+            return -1;
+        }
+
+        return db.transaction(async tx => {
+            const orderUpdate = await module.exports.update(tx, userId, { id: orderId, state: 'done' });
+            const materialUpdateResultPromise = toUpdate.map(async material => {
+                return materialsDB.update(tx, userId, { id: material.id, quantityInStock: material.quantityInStock });
+            });
+
+            return Promise.all(materialUpdateResultPromise);
+        });
+
     },
 
     /**

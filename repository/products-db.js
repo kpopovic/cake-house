@@ -113,7 +113,8 @@ module.exports = {
     *        "quantityInPending": 2878.00,
     *        "quantityInProduction": 0.00,
     *        "quantityInDone": 0.00,
-    *        "quantityToBuy": 0.00
+    *        "quantityToBuy": 0.00,
+    *        "quantityRequiredForProduction": 3
     *      },
     *      {
     *        "id": 3,
@@ -122,7 +123,8 @@ module.exports = {
     *        "quantityInPending": 1718.00,
     *        "quantityInProduction": 0.00,
     *        "quantityInDone": 0.00,
-    *        "quantityToBuy": 0.00
+    *        "quantityToBuy": 0.00,
+    *        "quantityRequiredForProduction": 7
     *      }
     *     ]
     *  },
@@ -153,6 +155,7 @@ module.exports = {
         const materialIds = productsResult.map(p => p.mId);
         const materialIdsUnique = _.uniq(materialIds);
         const materialsResult = await materials.listById(db, userId, { materialId: materialIdsUnique });
+        const mpResult = await materials_products.list(db, { productId: productIds });
 
         const resultGrouped = _.groupBy(productsResult, function (key) {
             return key.name;
@@ -160,13 +163,20 @@ module.exports = {
 
         const resultTransformed = _.keys(resultGrouped).map(key => {
             const product = resultGrouped[key];
+            const materialsWithNeededQuantity = _.filter(mpResult, { 'id': product[0].id });
 
-            const materials = _.filter(materialsResult, function (m) {
+            const tmpMaterials = materialsResult.map(m => {
                 const isFound = _.some(product, { mId: m.id });
                 if (isFound) {
-                    return m;
+                    const filteredMaterials = _.head(materialsWithNeededQuantity).materials;
+                    const filteredQuantity = _.filter(filteredMaterials, { id: m.id });
+                    const quantity = _.head(filteredQuantity).quantity;
+
+                    return Object.assign({}, m, { quantityRequiredForProduction: quantity });
                 }
             });
+
+            const materials = _.compact(tmpMaterials);
 
             const result = {
                 'id': product[0].id,

@@ -22,11 +22,17 @@ router.put('/', async function (req, res) {
     try {
         const orderId = parseInt(req.query.orderId); // NaN if not integer
         const toUpdate = Object.assign({ id: orderId }, req.body);
-        const result = await orders.update(req.db, req.userId, toUpdate);
-        res.json({ code: 0, type: 'UPDATE_MATERIAL', message: 'Material', data: { id: result } });
+        const isOrderDone = toUpdate.state === 'done';
+        if (isOrderDone) {
+            const result = await orders.finishOrder(req.db, req.userId, { id: orderId });
+            res.json({ code: 0, type: 'UPDATE_ORDER', message: 'Order is updated and finished', data: { result: result } });
+        } else {
+            const result = await orders.update(req.db, req.userId, toUpdate);
+            res.json({ code: 0, type: 'UPDATE_ORDER', message: 'Order is updated', data: { id: result } });
+        }
     } catch (err) {
         console.error(err);
-        res.json({ code: -1, type: 'UPDATE_MATERIAL', message: 'Order is not updated' });
+        res.json({ code: -1, type: 'UPDATE_ORDER', message: 'Order is not updated' });
     }
 });
 

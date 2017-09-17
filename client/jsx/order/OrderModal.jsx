@@ -21,17 +21,19 @@ export default class OrderModal extends Reflux.Component {
     }
 
 
-    renderOrderForm(name, state, deliveryDate, clientName, clientPhone) {
+    renderOrderForm(name, state, readOnly, readOnlyDoneButton, deliveryDate, clientName, clientPhone) {
         return (
             <Form>
                 <Form.Group>
                     <Form.Input
+                        disabled={readOnly}
                         label={locale.order_table_header_name}
                         placeholder={locale.order_table_search_placeholder}
                         value={name}
                         onChange={(e, { value }) => OrderModalActions.setOrderName(value)}
                     />
                     <Form.Field
+                        disabled={readOnly}
                         control={DatePicker}
                         label={locale.order_table_header_deliveryDate}
                         placeholderText={locale.order_table_header_deliveryDate}
@@ -40,12 +42,14 @@ export default class OrderModal extends Reflux.Component {
                         onChange={(m, e) => OrderModalActions.setDeliveryDate(m)}
                     />
                     <Form.Input
+                        disabled={readOnly}
                         label={locale.order_table_header_clientName}
                         placeholder={locale.order_table_header_clientName_placeholder}
                         value={clientName}
                         onChange={(e, { value }) => OrderModalActions.setClientName(value)}
                     />
                     <Form.Input
+                        disabled={readOnly}
                         label={locale.order_table_header_clientPhone}
                         placeholder={locale.order_table_header_clientPhone_placeholder}
                         value={clientPhone}
@@ -56,6 +60,7 @@ export default class OrderModal extends Reflux.Component {
                     <label>{locale.order_table_header_state}</label>
                     <Form.Field>
                         <Checkbox
+                            disabled={readOnly}
                             radio
                             label='pending'
                             name='checkboxRadioGroup'
@@ -66,6 +71,7 @@ export default class OrderModal extends Reflux.Component {
                     </Form.Field>
                     <Form.Field>
                         <Checkbox
+                            disabled={readOnly}
                             radio
                             label='production'
                             name='checkboxRadioGroup'
@@ -76,6 +82,7 @@ export default class OrderModal extends Reflux.Component {
                     </Form.Field>
                     <Form.Field>
                         <Checkbox
+                            disabled={readOnly || readOnlyDoneButton}
                             radio
                             label='done'
                             name='checkboxRadioGroup'
@@ -89,7 +96,7 @@ export default class OrderModal extends Reflux.Component {
         )
     }
 
-    renderFilterForm(data) {
+    renderFilterForm(data, readOnly) {
         const { productName, searchedProducts, selectedProduct, productQuantity, isSearchInProgress } = data;
         const disableButton = !(selectedProduct && productQuantity && productQuantity > 0);
 
@@ -101,6 +108,7 @@ export default class OrderModal extends Reflux.Component {
             <Form>
                 <Form.Group widths='equal'>
                     <Form.Field
+                        disabled={readOnly}
                         label={locale.order_table_modal_product_search}
                         placeholder={locale.order_table_modal_product_search_placeholder}
                         control={Search}
@@ -112,6 +120,7 @@ export default class OrderModal extends Reflux.Component {
                         onSearchChange={(e, { value }) => OrderModalActions.searchProduct(value)}
                     />
                     <Form.Input
+                        disabled={readOnly}
                         label={locale.order_table_modal_product_quantity}
                         placeholder={locale.order_table_modal_product_quantity_placeholder}
                         type='number'
@@ -120,7 +129,7 @@ export default class OrderModal extends Reflux.Component {
                         value={productQuantity}
                         onChange={(e, { value }) => OrderModalActions.setProductQuantity(value)}
                     />
-                    <Form.Field>
+                    <Form.Field disabled={readOnly}>
                         <label style={{ whiteSpace: 'pre' }}> </label>
                         <Button
                             primary
@@ -134,7 +143,7 @@ export default class OrderModal extends Reflux.Component {
         )
     }
 
-    renderInputForm(products) {
+    renderInputForm(products, readOnly) {
         const renderTableBody = () => {
             const productList = products.map((product, index) => {
                 return (
@@ -142,7 +151,10 @@ export default class OrderModal extends Reflux.Component {
                         <Table.Cell>{product.name}</Table.Cell>
                         <Table.Cell>{product.quantity}</Table.Cell>
                         <Table.Cell>
-                            <Button color='red' onClick={(e, data) => { OrderModalActions.removeProduct(product.id) }}>{locale.btn_remove}</Button>
+                            <Button
+                                disabled={readOnly}
+                                color='red'
+                                onClick={(e, data) => { OrderModalActions.removeProduct(product.id) }}>{locale.btn_remove}</Button>
                         </Table.Cell>
                     </Table.Row>
                 )
@@ -182,18 +194,18 @@ export default class OrderModal extends Reflux.Component {
     }
 
     render() {
-        const { filter, orderId, orderName, deliveryDate, orderState, clientName, clientPhone, products, open } = this.state.store;
-        const disableSaveBtn = products.length === 0 || orderName.length === 0 || clientName.length === 0 || deliveryDate == null;
+        const { filter, orderId, orderName, deliveryDate, orderState, clientName, clientPhone, products, open, readOnlyAll, readOnlyDoneButton } = this.state.store;
+        const disableSaveBtn = products.length === 0 || orderName.length === 0 || clientName.length === 0 || deliveryDate == null || readOnlyAll;
         const headerTitle = orderId ? locale.order_table_modal_edit_title : locale.order_table_modal_add_title;
 
         return (
             <Modal dimmer='blurring' open={open} onClose={(e, data) => { OrderModalActions.resetStore() }}>
                 <Modal.Header>{headerTitle}</Modal.Header>
                 <Modal.Content scrolling>
-                    {this.renderOrderForm(orderName, orderState, deliveryDate, clientName, clientPhone)}
-                    {this.renderFilterForm(filter)}
+                    {this.renderOrderForm(orderName, orderState, readOnlyAll, readOnlyDoneButton, deliveryDate, clientName, clientPhone)}
+                    {this.renderFilterForm(filter, readOnlyAll)}
                     <Divider />
-                    {this.renderInputForm(products)}
+                    {this.renderInputForm(products, readOnlyAll)}
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={(e, data) => { OrderModalActions.resetStore() }}>
