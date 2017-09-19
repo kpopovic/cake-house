@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import { Button, Checkbox, Grid, Header, Modal, Form, Input, Divider, Search, Table, Image } from 'semantic-ui-react';
+import OrderStateSelect from './OrderStateSelect';
 import DatePicker from 'react-datepicker';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
@@ -56,42 +57,9 @@ export default class OrderModal extends Reflux.Component {
                         onChange={(e, { value }) => OrderModalActions.setClientPhone(value)}
                     />
                 </Form.Group>
-                <Form.Group inline>
-                    <label>{locale.order_table_header_state}</label>
-                    <Form.Field>
-                        <Checkbox
-                            disabled={readOnly}
-                            radio
-                            label='pending'
-                            name='checkboxRadioGroup'
-                            value='pending'
-                            checked={state === 'pending'}
-                            onChange={(e, { value }) => OrderModalActions.setOrderState(value)}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <Checkbox
-                            disabled={readOnly}
-                            radio
-                            label='production'
-                            name='checkboxRadioGroup'
-                            value='production'
-                            checked={state === 'production'}
-                            onChange={(e, { value }) => OrderModalActions.setOrderState(value)}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <Checkbox
-                            disabled={readOnly || readOnlyDoneButton}
-                            radio
-                            label='done'
-                            name='checkboxRadioGroup'
-                            value='done'
-                            checked={state === 'done'}
-                            onChange={(e, { value }) => OrderModalActions.setOrderState(value)}
-                        />
-                    </Form.Field>
-                </Form.Group>
+
+                <OrderStateSelect onChange={(state) => { console.log(state) }} initialState='pending' />
+
             </Form>
         )
     }
