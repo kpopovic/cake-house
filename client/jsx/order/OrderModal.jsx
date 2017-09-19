@@ -21,7 +21,6 @@ export default class OrderModal extends Reflux.Component {
         });
     }
 
-
     renderOrderForm(name, state, readOnly, readOnlyDoneButton, deliveryDate, clientName, clientPhone) {
         return (
             <Form>

@@ -13,53 +13,52 @@ export default class OrderStateSelect extends Reflux.Component {
         super(props);
         this.store = buildStore(props.initialState);
 
-        OrderStateSelectActions.setState.completed.listen((checked) => {
-            this.props.onChange(checked);
+        OrderStateSelectActions.setState.completed.listen((currentState) => {
+            this.props.onChange(currentState);
         });
     }
 
     render() {
-        const initial = this.state.initial;
-        const checked = this.state.checked;
-        const readOnlyAll = initial === 'done'; // not possible to change order state any more !
+        const { initialState, currentState } = this.state;
+        const readOnly = initialState === STATE_DONE; // not possible to change order state any more !
 
         return (
             <Form.Group inline>
                 <Form.Field>
                     <Label
-                        disabled={readOnlyAll}
+                        disabled={readOnly}
                         basic>{locale.order_table_header_state}</Label>
                 </Form.Field>
                 <Form.Field>
                     <Checkbox
-                        disabled={readOnlyAll}
+                        disabled={readOnly}
                         radio
                         label={locale.order_state_pending}
                         name={RADIO_BUTTON_GROUP}
                         value={STATE_PENDING}
-                        checked={checked === STATE_PENDING}
+                        checked={currentState === STATE_PENDING}
                         onChange={(e, { value }) => OrderStateSelectActions.setState(value)}
                     />
                 </Form.Field>
                 <Form.Field>
                     <Checkbox
-                        disabled={readOnlyAll}
+                        disabled={readOnly}
                         radio
                         label={locale.order_state_production}
                         name={RADIO_BUTTON_GROUP}
                         value={STATE_PRODUCTION}
-                        checked={checked === STATE_PRODUCTION}
+                        checked={currentState === STATE_PRODUCTION}
                         onChange={(e, { value }) => OrderStateSelectActions.setState(value)}
                     />
                 </Form.Field>
                 <Form.Field>
                     <Checkbox
-                        disabled={readOnlyAll || initial === STATE_PENDING}
+                        disabled={readOnly || initialState === STATE_PENDING}
                         radio
                         label={locale.order_state_done}
                         name={RADIO_BUTTON_GROUP}
                         value={STATE_DONE}
-                        checked={checked === STATE_DONE}
+                        checked={currentState === STATE_DONE}
                         onChange={(e, { value }) => OrderStateSelectActions.setState(value)}
                     />
                 </Form.Field>
@@ -75,9 +74,5 @@ const STATE_DONE = 'done';
 
 OrderStateSelect.propTypes = {
     onChange: PropTypes.func.isRequired,
-    initialState: PropTypes.oneOf([STATE_PENDING, STATE_PRODUCTION, STATE_DONE]),
-};
-
-OrderStateSelect.defaultProps = {
-    initialState: STATE_PENDING
+    initialState: PropTypes.oneOf([STATE_PENDING, STATE_PRODUCTION, STATE_DONE]).isRequired,
 };

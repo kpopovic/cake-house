@@ -6,11 +6,11 @@ class OrderStateSelectStore extends Reflux.Store {
     constructor(initialState) {
         super(initialState);
         this.listenables = OrderStateSelectActions;
-        this.state = { initial: initialState, checked: initialState };
+        this.state = { initialState: initialState, currentState: initialState };
     }
 
     onSetState(state) {
-        this.setState({ checked: state });
+        this.setState({ currentState: state });
         OrderStateSelectActions.setState.completed(state);
     }
 }
