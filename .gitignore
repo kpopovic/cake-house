@@ -326,3 +326,4 @@ public/javascripts/index.min.js
 public/javascripts/login.min.js
 
 # End of https://www.gitignore.io/api/visualstudiocode
+client/jsx/order

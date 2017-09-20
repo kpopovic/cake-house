@@ -3,6 +3,8 @@
 import React, { Component } from 'react';
 import { Button, Checkbox, Grid, Header, Modal, Form, Input, Divider, Search, Table, Image } from 'semantic-ui-react';
 import OrderStateSelect from './OrderStateSelect';
+import OrderInput from './OrderInput';
+import OrderProductSelect from './OrderProductSelect';
 import DatePicker from 'react-datepicker';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
@@ -21,91 +23,12 @@ export default class OrderModal extends Reflux.Component {
         });
     }
 
-    renderOrderForm(name, state, readOnly, readOnlyDoneButton, deliveryDate, clientName, clientPhone) {
+    renderOrderForm() {
         return (
             <Form>
-                <Form.Group>
-                    <Form.Input
-                        disabled={readOnly}
-                        label={locale.order_table_header_name}
-                        placeholder={locale.order_table_search_placeholder}
-                        value={name}
-                        onChange={(e, { value }) => OrderModalActions.setOrderName(value)}
-                    />
-                    <Form.Field
-                        disabled={readOnly}
-                        control={DatePicker}
-                        label={locale.order_table_header_deliveryDate}
-                        placeholderText={locale.order_table_header_deliveryDate}
-                        todayButton={locale.btn_today}
-                        selected={deliveryDate}
-                        onChange={(m, e) => OrderModalActions.setDeliveryDate(m)}
-                    />
-                    <Form.Input
-                        disabled={readOnly}
-                        label={locale.order_table_header_clientName}
-                        placeholder={locale.order_table_header_clientName_placeholder}
-                        value={clientName}
-                        onChange={(e, { value }) => OrderModalActions.setClientName(value)}
-                    />
-                    <Form.Input
-                        disabled={readOnly}
-                        label={locale.order_table_header_clientPhone}
-                        placeholder={locale.order_table_header_clientPhone_placeholder}
-                        value={clientPhone}
-                        onChange={(e, { value }) => OrderModalActions.setClientPhone(value)}
-                    />
-                </Form.Group>
-
+                <OrderInput onChange={(state) => { console.log(state) }} disabled={false} />
                 <OrderStateSelect onChange={(state) => { console.log(state) }} initialState='pending' />
-
-            </Form>
-        )
-    }
-
-    renderFilterForm(data, readOnly) {
-        const { productName, searchedProducts, selectedProduct, productQuantity, isSearchInProgress } = data;
-        const disableButton = !(selectedProduct && productQuantity && productQuantity > 0);
-
-        const results = searchedProducts.map(m => {
-            return { id: m.id, title: m.name }
-        });
-
-        return (
-            <Form>
-                <Form.Group widths='equal'>
-                    <Form.Field
-                        disabled={readOnly}
-                        label={locale.order_table_modal_product_search}
-                        placeholder={locale.order_table_modal_product_search_placeholder}
-                        control={Search}
-                        loading={isSearchInProgress}
-                        results={results}
-                        value={productName}
-                        noResultsMessage={locale.order_table_modal_product_noResultsMessage}
-                        onResultSelect={(e, { result }) => OrderModalActions.selectProduct(result.id)}
-                        onSearchChange={(e, { value }) => OrderModalActions.searchProduct(value)}
-                    />
-                    <Form.Input
-                        disabled={readOnly}
-                        label={locale.order_table_modal_product_quantity}
-                        placeholder={locale.order_table_modal_product_quantity_placeholder}
-                        type='number'
-                        min={1}
-                        step={1}
-                        value={productQuantity}
-                        onChange={(e, { value }) => OrderModalActions.setProductQuantity(value)}
-                    />
-                    <Form.Field disabled={readOnly}>
-                        <label style={{ whiteSpace: 'pre' }}> </label>
-                        <Button
-                            primary
-                            disabled={disableButton}
-                            onClick={(e, data) => { OrderModalActions.addProduct(selectedProduct.id, productQuantity) }}>
-                            {locale.order_table_modal_btn_add}
-                        </Button>
-                    </Form.Field>
-                </Form.Group>
+                <OrderProductSelect onChange={(product) => { console.log(JSON.stringify(product, null, 2)) }} disabled={false} />
             </Form>
         )
     }
@@ -169,8 +92,7 @@ export default class OrderModal extends Reflux.Component {
             <Modal dimmer='blurring' open={open} onClose={(e, data) => { OrderModalActions.resetStore() }}>
                 <Modal.Header>{headerTitle}</Modal.Header>
                 <Modal.Content scrolling>
-                    {this.renderOrderForm(orderName, orderState, readOnlyAll, readOnlyDoneButton, deliveryDate, clientName, clientPhone)}
-                    {this.renderFilterForm(filter, readOnlyAll)}
+                    {this.renderOrderForm()}
                     <Divider />
                     {this.renderInputForm(products, readOnlyAll)}
                 </Modal.Content>
