@@ -6,7 +6,7 @@ const OrderInputActions = Reflux.createActions([
     "setOrderName",
     "setClientName",
     "setClientPhone",
-    "setDeliveryDate",
+    "setDeliveryDate"
 ]);
 
 OrderInputActions.stateChanged = Reflux.createAction({ asyncResult: true });

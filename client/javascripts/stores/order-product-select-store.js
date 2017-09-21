@@ -2,6 +2,7 @@
 
 import Reflux from 'reflux';
 import OrderProductSelectActions from './../actions/order-product-select-actions';
+import OrderModalActions from './../actions/order-modal-actions';
 import _ from 'lodash';
 import axios from 'axios';
 
@@ -9,7 +10,7 @@ class OrderProductSelectStore extends Reflux.Store {
 
     constructor() {
         super();
-        this.listenables = OrderProductSelectActions;
+        this.listenables = [OrderProductSelectActions, OrderModalActions];
         this.state = defaultState;
     }
 
@@ -62,6 +63,10 @@ class OrderProductSelectStore extends Reflux.Store {
         const productQuantity = isValidNumber ? value : '';
         const state = Object.assign({}, this.state.store, { productQuantity: productQuantity });
         this.setState(state);
+    }
+
+    onResetStore() {
+        this.setState(defaultState);
     }
 }
 

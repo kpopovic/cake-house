@@ -2,6 +2,8 @@
 
 import Reflux from 'reflux';
 
-const OrderStateSelectActions = Reflux.createActions({ setState: { asyncResult: true } });
+const OrderStateSelectActions = Reflux.createActions([
+    { setState: { asyncResult: true } }
+]);
 
 export default OrderStateSelectActions;

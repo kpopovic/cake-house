@@ -3,18 +3,10 @@
 import Reflux from 'reflux';
 
 const OrderModalActions = Reflux.createActions([
+    "save",
     "showModal",
-    "searchProduct",
-    "selectProduct",
-    "addProduct",
-    "removeProduct",
-    "setProductQuantity",
-    "setOrderName",
-    "setDeliveryDate",
-    "setOrderState",
-    "setClientName",
-    "setClientPhone",
-    "resetStore"
+    "update",
+    "resetStore",
 ]);
 
 OrderModalActions.save = Reflux.createAction({ asyncResult: true });

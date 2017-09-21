@@ -2,6 +2,7 @@
 
 import Reflux from 'reflux';
 import OrderInputActions from './../actions/order-input-actions';
+import OrderModalActions from './../actions/order-modal-actions';
 import _ from 'lodash';
 import moment from 'moment';
 
@@ -9,7 +10,7 @@ class OrderInputStore extends Reflux.Store {
 
     constructor() {
         super();
-        this.listenables = OrderInputActions;
+        this.listenables = [OrderInputActions, OrderModalActions];
         this.state = defaultState;
     }
 
@@ -41,6 +42,10 @@ class OrderInputStore extends Reflux.Store {
         const state = Object.assign({}, this.state, { clientPhone: clientPhone });
         this.setState(state);
         OrderInputActions.stateChanged.completed(state);
+    }
+
+    onResetStore() {
+        this.setState(defaultState);
     }
 }
 
