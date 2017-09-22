@@ -19,7 +19,7 @@ export default class OrderStateSelect extends Reflux.Component {
     }
 
     render() {
-        const { initialState, currentState } = this.state;
+        const { initialState, currentState } = this.state.store;
         const readOnly = initialState === STATE_DONE; // not possible to change order state any more !
 
         return (

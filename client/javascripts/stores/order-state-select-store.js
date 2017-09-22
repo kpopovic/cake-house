@@ -7,16 +7,22 @@ class OrderStateSelectStore extends Reflux.Store {
     constructor(initialState) {
         super(initialState);
         this.listenables = [OrderStateSelectActions, OrderModalActions];
-        this.state = { initialState: initialState, currentState: initialState };
+        this.state = { store: { initialState: initialState, currentState: initialState } };
     }
 
     onSetState(state) {
-        this.setState({ currentState: state });
-        OrderStateSelectActions.setState.completed(state);
+        const newState = Object.assign({}, this.state.store, { currentState: state });
+        this.setLocalState(newState);
+        OrderStateSelectActions.setState.completed(newState);
     }
 
     onResetStore() {
-        this.setState({ currentState: this.state.initialState });
+        const state = { initialState: this.state.initialState, currentState: this.state.initialState };
+        this.setLocalState(state);
+    }
+
+    setLocalState(data) {
+        this.setState({ store: data });
     }
 }
 

@@ -11,12 +11,13 @@ class OrderModalStore extends Reflux.Store {
     constructor() {
         super();
         this.listenables = OrderModalActions;
-        this.state = { store: defaultState };
+        this.state = { store: this.copyOfDefaultState() };
     }
 
     onSave() {
-        if (!this.state.store.isValid) {
-            console.warn('Not all fields are set in store');
+        const { isOrderLocked, isOrderValid } = this.state.store;
+        if (isOrderLocked || isOrderValid) {
+            console.warn('Not allowed to save data');
             return 0;
         }
 
@@ -56,15 +57,16 @@ class OrderModalStore extends Reflux.Store {
         const orderId = _.get(order, 'id', null);
         const orderName = _.get(order, 'name', '');
         const tmpDeliveryDate = _.get(order, 'deliveryDate', null);
-        const deliveryDate = tmpDeliveryDate ? moment(tmpDeliveryDate) : defaultState.deliveryDate;
-        const initialState = _.get(order, 'state', defaultState.initialState);
+        const deliveryDate = tmpDeliveryDate ? moment(tmpDeliveryDate) : this.copyOfDefaultState().deliveryDate;
+        const initialState = _.get(order, 'state', this.copyOfDefaultState().initialState);
         const clientName = _.get(order, 'clientName', '');
         const clientPhone = _.get(order, 'clientPhone', '');
         const products = _.get(order, 'products', []);
-        const isLocked = initialState === 'done';
+        const isOrderLocked = initialState === STATE_DONE;
         const open = true;
 
         const data = {
+            productSelect: this.copyOfDefaultState().productSelect,
             orderId: orderId,
             orderName: orderName,
             deliveryDate: deliveryDate,
@@ -73,44 +75,160 @@ class OrderModalStore extends Reflux.Store {
             clientName: clientName,
             clientPhone: clientPhone,
             products: products,
-            isLocked: isLocked,
+            isOrderLocked: isOrderLocked,
+            isOrderValid: orderId != null,
             open: open
         };
 
-        const newData = Object.assign({}, data, { isValid: this.isValid(data) });
-        this.setState({ store: newData });
+        this.setLocalState(data);
     }
 
-    onUpdate(data) {
-        const tmpData = _.mergeWith(this.state.store, data);
-        const newData = Object.assign({}, tmpData, { isValid: this.isValid(tmpData) });
-        this.setState({ store: newData });
+    onSetState(state) {
+        const newState = Object.assign({}, this.state.store, { currentState: state });
+        this.setLocalState(newState);
+    }
+
+    onSetOrderName(name) {
+        const isEmpty = _.isString(name) && _.trim(name).length === 0;
+        const orderName = isEmpty ? '' : name;
+        const state = Object.assign({}, this.state.store, { orderName: orderName });
+        this.setLocalState(state);
+    }
+
+    onSetDeliveryDate(dateMoment) {
+        const state = Object.assign({}, this.state.store, { deliveryDate: dateMoment });
+        this.setLocalState(state);
+    }
+
+    onSetClientName(name) {
+        const isEmpty = _.isString(name) && _.trim(name).length === 0;
+        const clientName = isEmpty ? '' : name;
+        const state = Object.assign({}, this.state.store, { clientName: clientName });
+        this.setLocalState(state);
+    }
+
+    onSetClientPhone(phone) {
+        const isEmpty = _.isString(phone) && _.trim(phone).length === 0;
+        const clientPhone = isEmpty ? '' : phone;
+        const state = Object.assign({}, this.state.store, { clientPhone: clientPhone });
+        this.setLocalState(state);
+    }
+
+    onAddProduct() {
+        const { selected, quantity } = this.state.store.productSelect;
+        if (selected && quantity > 0) {
+            const product = Object.assign({}, selected, { quantity: quantity });
+            const data = Object.assign(
+                {},
+                this.state.store,
+                { productSelect: this.copyOfDefaultState().productSelect },
+                { products: _.concat(this.state.store.products, product) }
+            );
+
+            this.setLocalState(data);
+        } else {
+            console.warn("Product filter settings are not valid");
+        }
+    }
+
+    onSearchProduct(name) {
+        if (name.trim().length === 0) {
+            const data = this.state.store;
+            data.productSelect.name = name;
+            this.setLocalState(state);
+
+            return 0;
+        }
+
+        const limit = 10;
+        const allNames = '%' + name + '%';
+        const promise = axios.get(`/v1/product?direction=first&limit=${limit}&filter[name]=${allNames}`);
+
+        promise.then(response => {
+            if (response.data.code === 0) {
+                const state = this.state.store;
+                state.productSelect.name = name;
+                state.productSelect.searchResult = response.data.data.products;
+                this.setLocalState(state);
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+    }
+
+    onSelectProduct(id) {
+        const value = parseInt(id);
+        const isValidNumber = _.isNumber(value) && _.isFinite(value);
+        if (isValidNumber) {
+            const products = _.filter(this.state.store.productSelect.searchResult, { id: value });
+            const state = this.state.store;
+            state.productSelect.name = products[0].name;
+            state.productSelect.selected = products[0];
+            this.setLocalState(state);
+        } else {
+            console.warn("Product id is not a number");
+        }
+    }
+
+    onSetProductQuantity(quantity) {
+        const value = parseInt(quantity);
+        const isValidNumber = _.isNumber(value) && _.isFinite(value);
+        const productQuantity = isValidNumber ? value : '';
+        const state = this.state.store;
+        state.productSelect.quantity = productQuantity;
+        this.setLocalState(state);
+
+    }
+
+    onRemoveProduct(id) {
+        const filteredProducts = _.filter(this.state.store.products, m => {
+            return m.id !== id;
+        });
+
+        const state = Object.assign({}, this.state.store, { products: filteredProducts });
+        this.setLocalState(state);
     }
 
     onResetStore() {
-        console.log("onResetStore=" + JSON.stringify(defaultState, null, 2));
-        this.setState({ store: defaultState });
+        this.setLocalState(this.copyOfDefaultState());
     }
 
-    isValid(data) {
-        const { orderName, orderState, clientName, deliveryDate, products } = data;
-        return orderState != 'done' && products.length > 0 && orderName.length > 0 && clientName.length > 0 && deliveryDate != null;
+    isOrderValid() {
+        const { orderName, initialState, clientName, deliveryDate, products } = this.state.store;
+        return products.length > 0 && orderName.length > 0 && clientName.length > 0 && moment(deliveryDate).isValid();
+    }
+
+    setLocalState(state) {
+        const theState = Object.assign({}, state, { isOrderValid: this.isOrderValid() });
+        this.setState({ store: theState });
+    }
+
+    copyOfDefaultState() {
+        return _.cloneDeep(defaultState);
     }
 }
 
 const defaultState = {
+    productSelect: {
+        name: '',
+        searchResult: [],
+        selected: null,
+        quantity: ''
+    },
     orderId: null,
     orderName: '',
     deliveryDate: null, // moment
-    initialState: 'pending', // only filled by showModal (value from database)
+    initialState: STATE_PENDING, // only filled by showModal (value from database)
     currentState: '', // dinamically changed via update method (changed by user on GUI)
     clientName: '',
     clientPhone: '',
     products: [],
-    isValid: false,
-    isLocked: false,
+    isOrderLocked: false, // isOrderLocked=true when initialState = 'done'
     open: false
 };
+
+const STATE_PENDING = 'pending';
+const STATE_DONE = 'done';
 
 export function buildStore() {
     return new OrderModalStore();

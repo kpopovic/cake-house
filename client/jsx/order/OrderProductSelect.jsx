@@ -21,7 +21,7 @@ export default class OrderProductSelect extends Reflux.Component {
 
     render() {
         const disabled = this.props.disabled;
-        const { productName, productQuantity, searchResult, selectedProduct } = this.state;
+        const { productName, productQuantity, searchResult, selectedProduct } = this.state.store;
         const disableButton = !(disabled == false && selectedProduct != null && productQuantity > 0);
         const results = searchResult.map(m => {
             return { id: m.id, title: m.name }

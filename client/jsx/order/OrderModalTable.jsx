@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { Form, Input, Image, Table } from 'semantic-ui-react';
+import { Button, Form, Input, Image, Table } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
@@ -10,9 +10,9 @@ import { buildStore } from './../../javascripts/stores/order-modal-table-store.j
 import locale from './../../javascripts/locale';
 
 export default class OrderModalTable extends Reflux.Component {
-    constructor() {
-        super();
-        this.store = buildStore();
+    constructor(props) {
+        super(props);
+        this.store = buildStore(props.products);
 
         OrderModalTableActions.stateChanged.completed.listen((products) => {
             this.props.onChange(products);
@@ -75,6 +75,7 @@ export default class OrderModalTable extends Reflux.Component {
 
 OrderModalTable.propTypes = {
     onChange: PropTypes.func.isRequired,
+    products: PropTypes.array.isRequired,
     disabled: PropTypes.bool
 };
 

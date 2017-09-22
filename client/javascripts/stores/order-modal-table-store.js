@@ -6,10 +6,10 @@ import _ from 'lodash';
 
 class OrderModalTableStore extends Reflux.Store {
 
-    constructor() {
-        super();
+    constructor(products) {
+        super(products);
         this.listenables = OrderModalTableActions;
-        this.state = defaultState;
+        this.state = { products: products };
     }
 
     onAddProduct(product) {
@@ -30,14 +30,10 @@ class OrderModalTableStore extends Reflux.Store {
     }
 
     onResetStore() {
-        this.setState(defaultState);
+        this.setState({ products: [] });
     }
 }
 
-const defaultState = {
-    products: []
-};
-
-export function buildStore() {
-    return new OrderModalTableStore();
+export function buildStore(products) {
+    return new OrderModalTableStore(products);
 }
