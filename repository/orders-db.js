@@ -73,7 +73,6 @@ module.exports = {
         };
 
         const theProps = _.omit(tmpProps, _.isUndefined, _.isNull);
-
         const orderId = theProps.id;
         const isNewProductsAvailable = Array.isArray(theProps.products) && theProps.products.length > 0;
 
@@ -114,8 +113,9 @@ module.exports = {
 
         // find all products in this order
         const orders = await this.listById(db, userId, { orderId: orderId });
-        const productIds = _.head(orders).products.map(p => p.id);
-        const productList = await products.listById(db, userId, { productId: productIds });
+        const productIds = _.head(orders).products.map(p => p.id); // remove duplicates
+        const productIdsUnique = _.uniq(productIds);
+        const productList = await products.listById(db, userId, { productId: productIdsUnique });
 
         // collect all materials from all products in this order
         const materials = _.flattenDeep(productList.map(p => p.materials));
@@ -193,7 +193,7 @@ module.exports = {
     *
     */
     listById: async function (/** @type {knex} */ db, /** @type {number} */ userId, /** @type {object} */ props) {
-        const orderIds = Array.of(props.orderId);
+        const orderIds = _.concat([], props.orderId);
 
         const result = await db.select(
             'o.id',

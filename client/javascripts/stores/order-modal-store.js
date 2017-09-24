@@ -16,12 +16,12 @@ class OrderModalStore extends Reflux.Store {
 
     onSave() {
         const { isOrderLocked, isOrderValid } = this.state.store;
-        if (isOrderLocked || isOrderValid) {
-            console.warn('Not allowed to save data');
+        if (isOrderLocked || !isOrderValid) {
+            console.warn('Not allowed to save data=' + JSON.stringify(this.state.store, null, 2));
             return 0;
         }
 
-        const { orderId, orderName, orderState, deliveryDate, clientName, clientPhone, products } = this.state.store;
+        const { orderId, orderName, currentState, deliveryDate, clientName, clientPhone, products } = this.state.store;
         const thePromise = () => {
             const productQuantityList = products.map(m => {
                 return { id: m.id, quantity: m.quantity }
@@ -29,7 +29,7 @@ class OrderModalStore extends Reflux.Store {
 
             const data = {
                 name: _.trim(orderName),
-                state: orderState,
+                state: currentState,
                 deliveryDate: deliveryDate.format('YYYY-MM-DD'),
                 clientName: _.trim(clientName),
                 clientPhone: _.trim(clientPhone),
@@ -115,8 +115,9 @@ class OrderModalStore extends Reflux.Store {
     }
 
     onAddProduct() {
-        const { selected, quantity } = this.state.store.productSelect;
-        if (selected && quantity > 0) {
+        const { selected } = this.state.store.productSelect;
+        const quantity = selected && selected.quantity > 0 ? selected.quantity : 0;
+        if (quantity > 0) {
             const product = Object.assign({}, selected, { quantity: quantity });
             const data = Object.assign(
                 {},
@@ -175,7 +176,7 @@ class OrderModalStore extends Reflux.Store {
         const isValidNumber = _.isNumber(value) && _.isFinite(value);
         const productQuantity = isValidNumber ? value : '';
         const state = this.state.store;
-        state.productSelect.quantity = productQuantity;
+        state.productSelect.selected.quantity = productQuantity;
         this.setLocalState(state);
 
     }
@@ -194,8 +195,8 @@ class OrderModalStore extends Reflux.Store {
     }
 
     isOrderValid() {
-        const { orderName, initialState, clientName, deliveryDate, products } = this.state.store;
-        return products.length > 0 && orderName.length > 0 && clientName.length > 0 && moment(deliveryDate).isValid();
+        const { orderName, clientName, deliveryDate, products } = this.state.store;
+        return products.length > 0 && orderName.length > 0 && clientName.length > 0 && deliveryDate != null;
     }
 
     setLocalState(state) {
@@ -212,8 +213,7 @@ const defaultState = {
     productSelect: {
         name: '',
         searchResult: [],
-        selected: null,
-        quantity: ''
+        selected: null
     },
     orderId: null,
     orderName: '',

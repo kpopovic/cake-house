@@ -40,7 +40,7 @@ module.exports = {
     *
     */
     listById: async function (/** @type {knex} */ db, /** @type {number} */ userId, /** @type {object} */ props) {
-        const materialIds = Array.of(props.materialId);
+        const materialIds = _.concat([], props.materialId);
 
         let subQuery = [];
         subQuery.push(

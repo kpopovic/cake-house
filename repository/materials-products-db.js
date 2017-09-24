@@ -24,7 +24,7 @@ module.exports = {
     * @returns {Promise}
     */
     list: async function (/** @type {knex} */ db, /** @type {object} */ props) {
-        const productId = Array.of(props.productId);
+        const productId = _.concat([], props.productId);
         const result = await db.select('materialId', 'productId', 'quantity').from("materials_products").whereIn('productId', productId);
 
         const resultGrouped = _.groupBy(result, function (key) {
@@ -61,7 +61,7 @@ module.exports = {
     * @returns {Promise}
     */
     delete: async function (/** @type {knex} */ db, /** @type {object} */ props) {
-        const productId = Array.of(props.productId);
+        const productId = _.concat([], props.productId);
         return db('materials_products').whereIn('productId', productId).del();
     }
 };

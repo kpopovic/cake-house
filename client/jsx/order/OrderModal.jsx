@@ -8,6 +8,7 @@ import Reflux from 'reflux';
 import OrderModalActions from './../../javascripts/actions/order-modal-actions';
 import { buildStore } from './../../javascripts/stores/order-modal-store.js';
 import locale from './../../javascripts/locale';
+import _ from 'lodash';
 
 export default class OrderModal extends Reflux.Component {
     constructor() {
@@ -65,9 +66,7 @@ export default class OrderModal extends Reflux.Component {
         return (
             <Form.Group inline>
                 <Form.Field>
-                    <Label
-                        disabled={isOrderLocked}
-                        basic>{locale.order_table_header_state}</Label>
+                    <Label basic active={!isOrderLocked}>{locale.order_table_header_state}</Label>
                 </Form.Field>
                 <Form.Field>
                     <Checkbox
@@ -107,9 +106,10 @@ export default class OrderModal extends Reflux.Component {
     }
 
     renderOrderProductSelect(data) {
-        const { initialState, productSelect, isOrderLocked, isOrderValid } = data;
-        const { name, searchResult, quantity, selected } = data.productSelect;
-        const disableButton = !isOrderValid;
+        const { initialState, productSelect, isOrderLocked } = data;
+        const { name, searchResult, selected } = data.productSelect;
+        const quantity = _.get(selected, 'quantity', '');
+        const disableButton = !(!isOrderLocked && quantity > 0);
 
         const results = searchResult.map(m => {
             return { id: m.id, title: m.name }
@@ -208,8 +208,6 @@ export default class OrderModal extends Reflux.Component {
         const { orderId, open, isOrderLocked } = this.state.store;
         const disableSaveButton = isOrderLocked;
         const headerTitle = orderId ? locale.order_table_modal_edit_title : locale.order_table_modal_add_title;
-
-        //console.log("render=" + JSON.stringify(this.state.store, null, 2));
 
         return (
             <Modal dimmer='blurring' open={open} onClose={(e, data) => { OrderModalActions.resetStore() }}>

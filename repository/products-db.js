@@ -135,7 +135,7 @@ module.exports = {
     *
     */
     listById: async function (/** @type {knex} */ db, /** @type {number} */ userId, /** @type {object} */ props) {
-        const productIds = Array.of(props.productId);
+        const productIds = _.concat([], props.productId);
 
         const productsResult = await db.select(
             'p.id',
