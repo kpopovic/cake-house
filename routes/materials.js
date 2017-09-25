@@ -33,6 +33,7 @@ router.get('/', async function (req, res) {
     try {
         const leftOff = parseInt(req.query.leftOff); // NaN if not integer
         const filterName = req.query.filter ? req.query.filter.name : null;
+        const filterIsQuantityToBuy = req.query.filter ? req.query.filter.isQuantityToBuy : false;
 
         const direction = (value, defaultValue) => {
             if (value === 'first' || value === 'next' || value === 'back') {
@@ -57,7 +58,8 @@ router.get('/', async function (req, res) {
             direction: direction(req.query.direction, 'first'),
             limit: limit(req.query.limit, 10),
             filter: {
-                name: filterName
+                name: filterName,
+                isQuantityToBuy: filterIsQuantityToBuy
             }
         };
 

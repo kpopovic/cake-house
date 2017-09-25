@@ -20,17 +20,23 @@ class MaterialTableStore extends Reflux.Store {
                 hasPrevious: false,
                 limit: theLimit,
                 filter: {
-                    name: null
+                    name: null,
+                    isQuantityToBuy: false
                 }
             }
         };
     }
 
     onListFirstPage(queryFilter) {
-        const { limit, filter } = this.state.mtStore;
+        const { limit, filter, isQuantityToBuy } = this.state.mtStore;
         const aLimit = limit + 1 // +1 is to see if we have next page
         const thefilter = queryFilter ? queryFilter : filter;
 
+        const rootUrl = `/v1/material?direction=first&limit=${aLimit}`;
+        const url = this.urlFromParams(rootUrl, thefilter);
+        const thePromise = axios.get(url);
+
+        /*
         const thePromise = () => {
             if (thefilter.name && thefilter.name.length > 0) {
                 const allNames = '%' + thefilter.name + '%';
@@ -38,9 +44,9 @@ class MaterialTableStore extends Reflux.Store {
             } else {
                 return axios.get(`/v1/material?direction=first&limit=${aLimit}`);
             }
-        }
+        }*/
 
-        thePromise().then(response => {
+        thePromise.then(response => {
             if (response.data.code === 0) {
                 const materials = response.data.data.materials;
                 const size = materials.length;
@@ -95,6 +101,11 @@ class MaterialTableStore extends Reflux.Store {
         const currentPage = this.state.mtStore.currentPage;
         const nextCurrentPage = currentPage + 1;
 
+        const rootUrl = `/v1/material?direction=next&leftOff=${leftOff}&limit=${aLimit}`;
+        const url = this.urlFromParams(rootUrl, thefilter);
+        const thePromise = axios.get(url);
+
+        /*
         const thePromise = () => {
             if (filter.name && filter.name.length > 0) {
                 const allNames = '%' + filter.name + '%';
@@ -102,9 +113,9 @@ class MaterialTableStore extends Reflux.Store {
             } else {
                 return axios.get(`/v1/material?direction=next&leftOff=${leftOff}&limit=${aLimit}`);
             }
-        }
+        }*/
 
-        thePromise().then(response => {
+        thePromise.then(response => {
             if (response.data.code === 0) {
                 const materials = response.data.data.materials;
                 const size = materials.length;
@@ -158,6 +169,11 @@ class MaterialTableStore extends Reflux.Store {
         const leftOff = this.state.mtStore.minLeftOff;
         const currentPage = this.state.mtStore.currentPage;
 
+        const rootUrl = `/v1/material?direction=next&leftOff=${leftOff}&limit=${aLimit}`;
+        const url = this.urlFromParams(rootUrl, thefilter);
+        const thePromise = axios.get(url);
+
+        /*
         const thePromise = () => {
             if (filter.name && filter.name.length > 0) {
                 const allNames = '%' + filter.name + '%';
@@ -165,9 +181,9 @@ class MaterialTableStore extends Reflux.Store {
             } else {
                 return axios.get(`/v1/material?direction=back&leftOff=${leftOff}&limit=${aLimit}`);
             }
-        }
+        }*/
 
-        thePromise().then(response => {
+        thePromise.then(response => {
             if (response.data.code === 0) {
                 const materials = response.data.data.materials;
                 const size = materials.length;
@@ -214,6 +230,24 @@ class MaterialTableStore extends Reflux.Store {
             console.log(error);
         });
     }
+
+    urlFromParams(rootUrl, filter) {
+        if (!filter || _.isEmpty(filter)) {
+            return rootUrl;
+        }
+
+        if (filter.name && filter.name.length > 0) {
+            const allNames = '%' + filter.name + '%';
+            return rootUrl + `&filter[name]=${allNames}`;
+        }
+
+        if (filter.isQuantityToBuy) {
+            return rootUrl + `&filter[isQuantityToBuy]=${filter.isQuantityToBuy}`;
+        }
+
+        return rootUrl;
+    }
+
 }
 
 export function buildStore(limit) {

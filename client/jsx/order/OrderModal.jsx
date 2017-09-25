@@ -92,7 +92,7 @@ export default class OrderModal extends Reflux.Component {
                 </Form.Field>
                 <Form.Field>
                     <Checkbox
-                        disabled={isOrderLocked || initialState === STATE_PENDING} // fixme !
+                        disabled={isOrderLocked || initialState === STATE_PENDING}
                         radio
                         label={locale.order_state_done}
                         name={RADIO_BUTTON_GROUP}
