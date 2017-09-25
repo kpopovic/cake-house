@@ -32,8 +32,8 @@ router.put('/', async function (req, res) {
 router.get('/', async function (req, res) {
     try {
         const leftOff = parseInt(req.query.leftOff); // NaN if not integer
-        const filterName = req.query.filter ? req.query.filter.name : null;
-        const filterIsQuantityToBuy = req.query.filter ? req.query.filter.isQuantityToBuy : false;
+        const filterName = _.get(req, 'query.filter.name', '%');
+        const filterIsQuantityToBuy = _.get(req, 'query.filter.isQuantityToBuy', false);
 
         const direction = (value, defaultValue) => {
             if (value === 'first' || value === 'next' || value === 'back') {

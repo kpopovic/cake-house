@@ -119,31 +119,44 @@ module.exports = {
 
         const materialIdsAsPromise = () => {
             if (direction === 'first') {
-                if (filter.name) {
-                    return db.select('id')
-                        .from('materials')
-                        .where('userId', userId)
-                        .whereNull("deactivated_at")
-                        .where('name', 'like', `${filter.name}`)
-                        .orderBy('id', ORDER)
+                if (filter.isQuantityToBuy) {
+                    return db.distinct('m.id')
+                        .select('m.id')
+                        .from('materials as m')
+                        .leftJoin('materials_products AS mp', 'mp.materialId', 'm.id')
+                        .leftJoin('products_orders AS po', 'po.productId', 'mp.productId')
+                        .leftJoin('orders AS o', 'o.id', 'po.orderid')
+                        .where('m.userId', userId)
+                        .whereNull("m.deactivated_at")
+                        .andWhere('m.name', 'like', `${filter.name}`)
+                        .andWhere('o.state', 'production')
+                        .andWhereRaw('(m.quantityInStock - po.quantity * mp.quantity) < 0')
+                        .orderBy('m.id', ORDER)
                         .limit(limit);
                 } else {
                     return db.select('id')
                         .from('materials')
                         .where('userId', userId)
                         .whereNull("deactivated_at")
+                        .where('name', 'like', `${filter.name}`)
                         .orderBy('id', ORDER)
                         .limit(limit);
                 }
             } else if (direction === 'next') {
-                if (filter.name) {
-                    return db.select('id')
-                        .from('materials')
-                        .where('userId', userId)
-                        .where("id", ">", leftOff)
-                        .whereNull("deactivated_at")
-                        .where('name', 'like', `${filter.name}`)
-                        .orderBy('id', ORDER)
+                if (filter.isQuantityToBuy) {
+                    return db.distinct('m.id')
+                        .select('m.id')
+                        .from('materials as m')
+                        .leftJoin('materials_products AS mp', 'mp.materialId', 'm.id')
+                        .leftJoin('products_orders AS po', 'po.productId', 'mp.productId')
+                        .leftJoin('orders AS o', 'o.id', 'po.orderid')
+                        .where('m.userId', userId)
+                        .whereNull("m.deactivated_at")
+                        .andWhere('m.name', 'like', `${filter.name}`)
+                        .andWhere('o.state', 'production')
+                        .andWhereRaw('(m.quantityInStock - po.quantity * mp.quantity) < 0')
+                        .andWhere("m.id", ">", leftOff)
+                        .orderBy('m.id', ORDER)
                         .limit(limit);
                 } else {
                     return db.select('id')
@@ -155,14 +168,20 @@ module.exports = {
                         .limit(limit);
                 }
             } else if (direction === 'back') {
-                if (filter.name) {
-                    return db.select('id')
-                        .from('materials')
-                        .where('userId', userId)
-                        .where("id", "<", leftOff)
-                        .whereNull("deactivated_at")
-                        .where('name', 'like', `${filter.name}`)
-                        .orderBy('id', ORDER)
+                if (filter.isQuantityToBuy) {
+                    return db.distinct('m.id')
+                        .select('m.id')
+                        .from('materials as m')
+                        .leftJoin('materials_products AS mp', 'mp.materialId', 'm.id')
+                        .leftJoin('products_orders AS po', 'po.productId', 'mp.productId')
+                        .leftJoin('orders AS o', 'o.id', 'po.orderid')
+                        .where('m.userId', userId)
+                        .whereNull("m.deactivated_at")
+                        .andWhere('m.name', 'like', `${filter.name}`)
+                        .andWhere('o.state', 'production')
+                        .andWhereRaw('(m.quantityInStock - po.quantity * mp.quantity) < 0')
+                        .andWhere("m.id", "<", leftOff)
+                        .orderBy('m.id', ORDER)
                         .limit(limit);
                 } else {
                     return db.select('id')
@@ -184,8 +203,7 @@ module.exports = {
 
         const materialIdsJoined = result.map(m => m.id).join();
 
-        let subQuery = [];
-        subQuery.push(
+        let subQuery = [
             '(',
             'SELECT',
             'm.userId, m.id, m.name, m.unit, m.quantityInStock,',
@@ -223,7 +241,7 @@ module.exports = {
             `m.id IN ( ${materialIdsJoined} )`,
             'GROUP BY userid, id, state',
             ') AS X'
-        );
+        ];
 
         return db.select(
             'id',

@@ -36,16 +36,6 @@ class MaterialTableStore extends Reflux.Store {
         const url = this.urlFromParams(rootUrl, thefilter);
         const thePromise = axios.get(url);
 
-        /*
-        const thePromise = () => {
-            if (thefilter.name && thefilter.name.length > 0) {
-                const allNames = '%' + thefilter.name + '%';
-                return axios.get(`/v1/material?direction=first&filter[name]=${allNames}&limit=${aLimit}`);
-            } else {
-                return axios.get(`/v1/material?direction=first&limit=${aLimit}`);
-            }
-        }*/
-
         thePromise.then(response => {
             if (response.data.code === 0) {
                 const materials = response.data.data.materials;
@@ -102,18 +92,8 @@ class MaterialTableStore extends Reflux.Store {
         const nextCurrentPage = currentPage + 1;
 
         const rootUrl = `/v1/material?direction=next&leftOff=${leftOff}&limit=${aLimit}`;
-        const url = this.urlFromParams(rootUrl, thefilter);
+        const url = this.urlFromParams(rootUrl, filter);
         const thePromise = axios.get(url);
-
-        /*
-        const thePromise = () => {
-            if (filter.name && filter.name.length > 0) {
-                const allNames = '%' + filter.name + '%';
-                return axios.get(`/v1/material?direction=next&filter[name]=${allNames}&leftOff=${leftOff}&limit=${aLimit}`);
-            } else {
-                return axios.get(`/v1/material?direction=next&leftOff=${leftOff}&limit=${aLimit}`);
-            }
-        }*/
 
         thePromise.then(response => {
             if (response.data.code === 0) {
@@ -169,19 +149,9 @@ class MaterialTableStore extends Reflux.Store {
         const leftOff = this.state.mtStore.minLeftOff;
         const currentPage = this.state.mtStore.currentPage;
 
-        const rootUrl = `/v1/material?direction=next&leftOff=${leftOff}&limit=${aLimit}`;
-        const url = this.urlFromParams(rootUrl, thefilter);
+        const rootUrl = `/v1/material?direction=back&leftOff=${leftOff}&limit=${aLimit}`;
+        const url = this.urlFromParams(rootUrl, filter);
         const thePromise = axios.get(url);
-
-        /*
-        const thePromise = () => {
-            if (filter.name && filter.name.length > 0) {
-                const allNames = '%' + filter.name + '%';
-                return axios.get(`/v1/material?direction=back&filter[name]=${allNames}&leftOff=${leftOff}&limit=${aLimit}`);
-            } else {
-                return axios.get(`/v1/material?direction=back&leftOff=${leftOff}&limit=${aLimit}`);
-            }
-        }*/
 
         thePromise.then(response => {
             if (response.data.code === 0) {
