@@ -14,13 +14,14 @@ const OrderModalActions = Reflux.createActions([
     "setDeliveryDate",
     "selectProduct",
     "searchProduct",
-    "addProduct",
     "removeProduct",
     "setProductQuantity",
     "showModal",
     "resetStore",
+    "resetAddProduct"
 ]);
 
 OrderModalActions.save = Reflux.createAction({ asyncResult: true });
+OrderModalActions.addProduct = Reflux.createAction({ asyncResult: true });
 
 export default OrderModalActions;

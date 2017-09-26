@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { Button, Header, Modal, Form, Divider, Input, Search, Label, Checkbox, Table } from 'semantic-ui-react';
+import { Button, Header, Modal, Form, Divider, Input, Image, Search, Label, Checkbox, Table } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
@@ -18,6 +18,10 @@ export default class OrderModal extends Reflux.Component {
         OrderModalActions.save.completed.listen(() => {
             this.props.onSave();
             OrderModalActions.resetStore();
+        });
+
+        OrderModalActions.addProduct.completed.listen(() => {
+            OrderModalActions.resetAddProduct();
         });
     }
 

@@ -62,7 +62,7 @@ class OrderModalStore extends Reflux.Store {
         const clientName = _.get(order, 'clientName', '');
         const clientPhone = _.get(order, 'clientPhone', '');
         const products = _.get(order, 'products', []);
-        const isOrderLocked = initialState === STATE_DONE;
+        const isOrderLocked = initialState === 'done';
         const open = true;
 
         const data = {
@@ -116,7 +116,7 @@ class OrderModalStore extends Reflux.Store {
 
     onAddProduct() {
         const { selected } = this.state.store.productSelect;
-        const quantity = selected && selected.quantity > 0 ? selected.quantity : 0;
+        const quantity = Number.parseInt(selected.quantity);
         if (quantity > 0) {
             const product = Object.assign({}, selected, { quantity: quantity });
             const data = Object.assign(
@@ -127,15 +127,14 @@ class OrderModalStore extends Reflux.Store {
             );
 
             this.setLocalState(data);
-        } else {
-            console.warn("Product filter settings are not valid");
+            OrderModalActions.addProduct.completed(data);
         }
     }
 
     onSearchProduct(name) {
         if (name.trim().length === 0) {
-            const data = this.state.store;
-            data.productSelect.name = name;
+            const state = Object.assign({}, this.state.store);
+            state.productSelect.name = name;
             this.setLocalState(state);
 
             return 0;
@@ -147,7 +146,7 @@ class OrderModalStore extends Reflux.Store {
 
         promise.then(response => {
             if (response.data.code === 0) {
-                const state = this.state.store;
+                const state = Object.assign({}, this.state.store);
                 state.productSelect.name = name;
                 state.productSelect.searchResult = response.data.data.products;
                 this.setLocalState(state);
@@ -162,7 +161,7 @@ class OrderModalStore extends Reflux.Store {
         const isValidNumber = _.isNumber(value) && _.isFinite(value);
         if (isValidNumber) {
             const products = _.filter(this.state.store.productSelect.searchResult, { id: value });
-            const state = this.state.store;
+            const state = Object.assign({}, this.state.store);
             state.productSelect.name = products[0].name;
             state.productSelect.selected = products[0];
             this.setLocalState(state);
@@ -175,10 +174,9 @@ class OrderModalStore extends Reflux.Store {
         const value = parseInt(quantity);
         const isValidNumber = _.isNumber(value) && _.isFinite(value);
         const productQuantity = isValidNumber ? value : '';
-        const state = this.state.store;
+        const state = Object.assign({}, this.state.store);
         state.productSelect.selected.quantity = productQuantity;
         this.setLocalState(state);
-
     }
 
     onRemoveProduct(id) {
@@ -192,6 +190,11 @@ class OrderModalStore extends Reflux.Store {
 
     onResetStore() {
         this.setLocalState(this.copyOfDefaultState());
+    }
+
+    onResetAddProduct() {
+        const state = Object.assign({}, this.state.store, { productSelect: this.copyOfDefaultState().productSelect });
+        this.setLocalState(state);
     }
 
     isOrderValid() {
@@ -218,7 +221,7 @@ const defaultState = {
     orderId: null,
     orderName: '',
     deliveryDate: null, // moment
-    initialState: STATE_PENDING, // only filled by showModal (value from database)
+    initialState: 'pending', // only filled by showModal (value from database)
     currentState: '', // dinamically changed via update method (changed by user on GUI)
     clientName: '',
     clientPhone: '',
@@ -226,9 +229,6 @@ const defaultState = {
     isOrderLocked: false, // isOrderLocked=true when initialState = 'done'
     open: false
 };
-
-const STATE_PENDING = 'pending';
-const STATE_DONE = 'done';
 
 export function buildStore() {
     return new OrderModalStore();
