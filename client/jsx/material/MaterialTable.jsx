@@ -62,13 +62,14 @@ export default class MaterialTable extends Reflux.Component {
 
     render() {
         const { list, hasNext, hasPrevious, filter } = this.state.mtStore;
+        const showShoppingListButton = filter.isQuantityToBuy && list.length > 0;
         return (
             <div>
                 <MaterialModal
                     onCreate={() => MaterialTableActions.listFirstPage()}
                     onUpdate={() => MaterialTableActions.listFirstPage()}
                 />
-                <MaterialSearchFilter onSearch={filter => MaterialTableActions.listFirstPage(filter)} />
+                <MaterialSearchFilter onSearch={filter => MaterialTableActions.listFirstPage(filter)} showShoppingListButton={showShoppingListButton} />
                 <Table compact celled>
                     <Table.Header>
                         <Table.Row>

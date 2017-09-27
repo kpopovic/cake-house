@@ -38,6 +38,8 @@ const locale = new LocalizedStrings({
         material_table_modal_unit_content: "Unesite jedinicu materijala",
         material_table_modal_name_content: "Unesite naziv materijala",
 
+        material_table_shoppingList_btn: "Lista kupnje",
+
         material_unit_L: "Litra",
         material_unit_kg: "Kilogram",
         material_unit_piece: "Komad",

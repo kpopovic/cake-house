@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { Input, Search, Form, Checkbox } from 'semantic-ui-react';
+import { Button, Input, Search, Form, Checkbox } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Reflux from 'reflux';
 import locale from './../../javascripts/locale.js';
@@ -19,6 +19,7 @@ export default class MaterialSearchFilter extends Reflux.Component {
 
     render() {
         const { name, isQuantityToBuy } = this.state.store;
+        const { showShoppingListButton } = this.props;
         return (
             <Form>
                 <Form.Group inline>
@@ -36,6 +37,12 @@ export default class MaterialSearchFilter extends Reflux.Component {
                             onChange={(e, { checked }) => MaterialSearchFilterActions.setQuantityToBuy(checked)}
                         />
                     </Form.Field>
+                    <div style={showShoppingListButton ? {} : { display: 'none' }}>
+                        <Form.Field>
+                            <label style={{ whiteSpace: 'pre' }}> </label>
+                            <Button content={locale.material_table_shoppingList_btn} icon='download' labelPosition='left' onClick={() => { }} />
+                        </Form.Field>
+                    </div>
                 </Form.Group>
             </Form>
         )
@@ -43,5 +50,10 @@ export default class MaterialSearchFilter extends Reflux.Component {
 }
 
 MaterialSearchFilter.propTypes = {
-    onSearch: PropTypes.func.isRequired
+    onSearch: PropTypes.func.isRequired,
+    showQuantityToBuyButton: PropTypes.bool
+};
+
+MaterialSearchFilter.defaultProps = {
+    showShoppingListButton: false
 };
