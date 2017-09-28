@@ -4,7 +4,8 @@ import Reflux from 'reflux';
 
 let MaterialSearchFilterActions = Reflux.createActions([
     "setName",
-    "setQuantityToBuy"
+    "setQuantityToBuy",
+    "downloadShoppingList"
 ]);
 
 MaterialSearchFilterActions.stateChanged = Reflux.createAction({ asyncResult: true });

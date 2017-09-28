@@ -69,7 +69,10 @@ export default class MaterialTable extends Reflux.Component {
                     onCreate={() => MaterialTableActions.listFirstPage()}
                     onUpdate={() => MaterialTableActions.listFirstPage()}
                 />
-                <MaterialSearchFilter onSearch={filter => MaterialTableActions.listFirstPage(filter)} showShoppingListButton={showShoppingListButton} />
+                <MaterialSearchFilter
+                    onSearch={filter => MaterialTableActions.listFirstPage(filter)}
+                    showShoppingListButton={showShoppingListButton}
+                />
                 <Table compact celled>
                     <Table.Header>
                         <Table.Row>

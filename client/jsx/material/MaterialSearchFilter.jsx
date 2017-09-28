@@ -40,7 +40,12 @@ export default class MaterialSearchFilter extends Reflux.Component {
                     <div style={showShoppingListButton ? {} : { display: 'none' }}>
                         <Form.Field>
                             <label style={{ whiteSpace: 'pre' }}> </label>
-                            <Button content={locale.material_table_shoppingList_btn} icon='download' labelPosition='left' onClick={() => { }} />
+                            <Button
+                                icon='download'
+                                content={locale.material_table_shoppingList_btn}
+                                labelPosition='left'
+                                onClick={() => MaterialSearchFilterActions.downloadShoppingList()}
+                            />
                         </Form.Field>
                     </div>
                 </Form.Group>
