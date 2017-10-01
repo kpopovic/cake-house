@@ -20,6 +20,7 @@ module.exports = {
     * [
     *   {
     *     "id": 2,
+    *     "unit": L,
     *     "name": "DummyMaterial2",
     *     "quantityInStock": 199.99,
     *     "quantityInPending": 2384.00,
@@ -29,6 +30,7 @@ module.exports = {
     *   },
     *   {
     *      "id": 3,
+    *      "unit": "kg",
     *      "name": "DummyMaterial4",
     *      "quantityInStock": 399.99,
     *      "quantityInPending": 1725.00,

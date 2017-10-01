@@ -1,7 +1,10 @@
 import Reflux from 'reflux';
 import MaterialSearchFilterActions from './../actions/material-search-filter-actions';
-import _ from 'lodash';
 import * as XLSX from 'xlsx';
+import _ from 'lodash';
+import moment from 'moment';
+import axios from 'axios';
+import locale from './../../javascripts/locale';
 
 class MaterialSearchFilterStore extends Reflux.Store {
 
@@ -33,9 +36,9 @@ class MaterialSearchFilterStore extends Reflux.Store {
      * https://www.npmjs.com/package/xlsx
      * https://github.com/SheetJS/js-xlsx/tree/1a8f97269e6b7f8d4db67d08db2ad587f6da5259/demos/react
      */
-    onDownloadShoppingList() {
+    downloadFile(filename, data) {
         /* original data */
-        var data = [[1, 2, 3], [true, false, null, "sheetjs"], ["foo", "bar", new Date("2014-02-19T14:30Z"), "0.3"], ["baz", null, "qux"]]
+        //var data = [[1, 2, 3], [true, false, null, "sheetjs"], ["foo", "bar", new Date("2014-02-19T14:30Z"), "0.3"], ["baz", null, "qux"]]
         var ws_name = "SheetJS";
 
         function Workbook() {
@@ -59,7 +62,32 @@ class MaterialSearchFilterStore extends Reflux.Store {
             return buf;
         }
 
-        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "test.xlsx");
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), filename + ".xlsx");
+    }
+
+    onDownloadShoppingList() {
+        const url = '/v1/material?direction=first&limit=100&filter[isQuantityToBuy]=true';
+        const thePromise = axios.get(url);
+
+        thePromise.then(response => {
+            if (response.data.code === 0) {
+                const materials = response.data.data.materials;
+                const size = materials.length;
+                if (size > 0) {
+                    const header = [locale.material_table_header_name, locale.material_table_header_unit, locale.material_table_header_quantityToBuy];
+                    const body = materials.map(m => {
+                        return [m.name, locale[`material_unit_${m.unit}`], m.quantityToBuy];
+                    });
+
+                    const data = _.concat([header], body);
+                    const date = moment().format("DD_MM_YYYY");
+                    this.downloadFile(locale.material_table_shoppingList_btn + "_" + date, data);
+                }
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+
     }
 }
 
